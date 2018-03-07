@@ -15,7 +15,7 @@
  *
  * Created by jett on 2/25/18.
  */
-package com.clueride;
+package com.clueride.sse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,8 +43,8 @@ import org.glassfish.jersey.media.sse.SseFeature;
  */
 @Singleton
 @Path("game-state-broadcast")
-public class GameStateBroadcastJersey2 {
-    private static final Logger LOGGER = Logger.getLogger(GameStateBroadcastJersey2.class);
+public class GameStateWebService {
+    private static final Logger LOGGER = Logger.getLogger(GameStateWebService.class);
 
     private Map<Integer,SseBroadcaster> broadcasterMap = new HashMap<>();
     private Map<Integer,ServerSentEventChannel> channelMap = new HashMap<>();

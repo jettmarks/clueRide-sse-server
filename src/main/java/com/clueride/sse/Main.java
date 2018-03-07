@@ -1,4 +1,4 @@
-package com.clueride;
+package com.clueride.sse;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -13,13 +13,13 @@ import java.net.URI;
  */
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
-    public static final String BASE_URI = "http://0.0.0.0:6543/rest/";
+    static final String BASE_URI = "http://0.0.0.0:6543/rest/";
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      * @return Grizzly HTTP server.
      */
-    public static HttpServer startServer() {
+    static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
         // in com.clueride package
         final ResourceConfig rc = new ResourceConfig().packages("com.clueride");

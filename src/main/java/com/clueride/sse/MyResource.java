@@ -1,4 +1,4 @@
-package com.clueride;
+package com.clueride.sse;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

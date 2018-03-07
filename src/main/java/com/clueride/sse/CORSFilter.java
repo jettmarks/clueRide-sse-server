@@ -15,17 +15,17 @@
  *
  * Created by jett on 3/4/18.
  */
-package com.clueride;
+package com.clueride.sse;
 
-/**
- * Handles the CORS responses for the Jersey requests.
- */
 import java.io.IOException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Handles the CORS responses for the Jersey requests.
+ */
 @Provider
 public class CORSFilter implements ContainerResponseFilter {
 
