@@ -15,7 +15,7 @@
  *
  * Created by jett on 2/26/18.
  */
-package com.clueride;
+package com.clueride.sse;
 
 import org.glassfish.jersey.media.sse.EventOutput;
 
