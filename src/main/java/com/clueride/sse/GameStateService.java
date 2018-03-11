@@ -36,4 +36,12 @@ public interface GameStateService {
      * @param outingId Unique identifier for the associated Outing.
      */
     void releaseChannelResources(Integer outingId);
+
+    /**
+     * Sends the message to the matching outingId's channel.
+     * @param outingId Unique identifier for the Outing.
+     * @param message String to be sent to all subscribers of this Outing.
+     */
+    void broadcastMessage(Integer outingId, String message);
+
 }

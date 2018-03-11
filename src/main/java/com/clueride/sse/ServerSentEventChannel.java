@@ -17,26 +17,48 @@
  */
 package com.clueride.sse;
 
-import org.glassfish.jersey.media.sse.EventOutput;
+import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 /**
  * Support for pushing an event to all members of a group.
  *
  * Responsible for the life-cycle of the EventOutput object used
- * for a given group.
+ * for a given group as well as the thread which provides timing.
  *
  * Collaborates with the WebService providing the ServerSentEvent endpoint.
  */
 public class ServerSentEventChannel {
-    private final EventOutput eventOutput = new EventOutput();
+    private final SseBroadcaster broadcaster = new SseBroadcaster();
     private final Integer outingId;
+    private final KeepAliveGenerator keepAliveGenerator;
+    private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
 
     public ServerSentEventChannel(Integer outingId) {
         this.outingId = outingId;
+        keepAliveGenerator = new KeepAliveGenerator();
+        keepAliveGenerator.setAction(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        broadcaster.broadcast(
+                                gameStateEventFactory.getKeepAliveEvent()
+                        );
+                    }
+                }
+        );
+        keepAliveGenerator.start();
     }
 
-    public EventOutput getEventOutput() {
-        return this.eventOutput;
+    public Integer getOutingId() {
+        return this.outingId;
+    }
+
+    public SseBroadcaster getBroadcaster() {
+        return this.broadcaster;
+    }
+
+    public KeepAliveGenerator getKeepAliveGenerator() {
+        return this.keepAliveGenerator;
     }
 
 }
