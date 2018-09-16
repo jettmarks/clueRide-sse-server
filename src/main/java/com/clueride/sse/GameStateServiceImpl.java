@@ -20,12 +20,15 @@ package com.clueride.sse;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 /**
  * Implementation of GameStateService.
  */
 public class GameStateServiceImpl implements GameStateService {
+    private static final Logger LOGGER = Logger.getLogger(GameStateServiceImpl.class);
+
     private Map<Integer,ServerSentEventChannel> channelMap = new HashMap<>();
     private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
 
@@ -45,6 +48,7 @@ public class GameStateServiceImpl implements GameStateService {
 
     @Override
     public void broadcastMessage(Integer outingId, String message) {
+        LOGGER.debug(String.format("Broadcasting on Outing %d: %s", outingId, message));
         ServerSentEventChannel channel = getEventChannel(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
         broadcaster.broadcast(gameStateEventFactory.getGameStateEvent(message));

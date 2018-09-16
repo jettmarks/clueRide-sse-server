@@ -37,42 +37,42 @@ import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 import org.glassfish.jersey.media.sse.SseFeature;
 
-    /**
-     * Broadcasts posted Game State changes to each of the clients who have subscribed to the events for a given Outing ID.
-     */
-    @Singleton
-    @Path("game-state-broadcast")
-    public class GameStateWebService {
-        private static final Logger LOGGER = Logger.getLogger(GameStateWebService.class);
+/**
+ * Broadcasts posted Game State changes to each of the clients who have subscribed to the events for a given Outing ID.
+ */
+@Singleton
+@Path("game-state-broadcast")
+public class GameStateWebService {
+    private static final Logger LOGGER = Logger.getLogger(GameStateWebService.class);
 
-        private GameStateService gameStateService = new GameStateServiceImpl();
+    private GameStateService gameStateService = new GameStateServiceImpl();
 
-        @GET
-        @Produces(SseFeature.SERVER_SENT_EVENTS)
-        @Path("{outingId}")
-        public EventOutput subscribeToOutingIdChannel(
-                @PathParam("outingId") Integer outingId,
-                @QueryParam("r") final String requestId
-        ) {
-            LOGGER.debug("Outing ID: " + outingId + "  Request ID: " + requestId);
-            ServerSentEventChannel channel = gameStateService.openChannelResources(outingId);
-            SseBroadcaster broadcaster = channel.getBroadcaster();
-            EventOutput eventOutput = new EventOutput();
-            broadcaster.add(eventOutput);
-            return eventOutput;
-        }
+    @GET
+    @Produces(SseFeature.SERVER_SENT_EVENTS)
+    @Path("{outingId}")
+    public EventOutput subscribeToOutingIdChannel(
+            @PathParam("outingId") Integer outingId,
+            @QueryParam("r") final String requestId
+    ) {
+        LOGGER.debug("Outing ID: " + outingId + "  Request ID: " + requestId);
+        ServerSentEventChannel channel = gameStateService.openChannelResources(outingId);
+        SseBroadcaster broadcaster = channel.getBroadcaster();
+        EventOutput eventOutput = new EventOutput();
+        broadcaster.add(eventOutput);
+        return eventOutput;
+    }
 
-        @POST
-        @Path("{outingId}")
-        @Produces(MediaType.TEXT_PLAIN)
-        @Consumes(MediaType.TEXT_PLAIN)
-        public String broadcastMessage(
-                String message,
-                @PathParam("outingId") Integer outingId
-        ) {
-            gameStateService.broadcastMessage(outingId, message);
-            return "Message '" + message + "' has been broadcast.";
-        }
+    @POST
+    @Path("{outingId}")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String broadcastMessage(
+            String message,
+            @PathParam("outingId") Integer outingId
+    ) {
+        gameStateService.broadcastMessage(outingId, message);
+        return "Message '" + message + "' has been broadcast.";
+    }
 
     /**
      * Releases channel and its resources after notifying subscribers.

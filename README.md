@@ -31,6 +31,11 @@ various JAR files required to run, and then copy the
 resultant jar file onto the same server where the
 main Tomcat container is running.
 
+### Steps
+1. From the IDE: Build -> Build Artifacts ...
+2. JAR file is placed under ./out/artifacts/sse_server_jar/
+3. Hand transfer the file to the location on the host where it runs.
+
 ## Gotchas / Couplings
 - The port is hardcoded within the Main class.
 - The Angular client expects exactly the text 
