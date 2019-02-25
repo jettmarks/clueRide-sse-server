@@ -15,7 +15,7 @@
  *
  * Created by jett on 2/26/18.
  */
-package com.clueride.sse;
+package com.clueride.sse.common;
 
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
@@ -31,17 +31,21 @@ public class ServerSentEventChannel {
     private final SseBroadcaster broadcaster = new SseBroadcaster();
     private final Integer outingId;
     private final KeepAliveGenerator keepAliveGenerator;
-    private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
+    private final static EventFactory keepAliveEventFactory = new KeepAliveEventFactory();
+    /* This is chosen to be a bit under the 45-second interval that the client uses for checking up on us. */
+    private final static int KEEP_ALIVE_INTERVAL = 35;
 
-    public ServerSentEventChannel(Integer outingId) {
+    public ServerSentEventChannel(
+            Integer outingId
+    ) {
         this.outingId = outingId;
-        keepAliveGenerator = new KeepAliveGenerator();
+        keepAliveGenerator = new KeepAliveGenerator(KEEP_ALIVE_INTERVAL);
         keepAliveGenerator.setAction(
                 new Runnable() {
                     @Override
                     public void run() {
                         broadcaster.broadcast(
-                                gameStateEventFactory.getKeepAliveEvent()
+                                keepAliveEventFactory.getKeepAliveEvent()
                         );
                     }
                 }

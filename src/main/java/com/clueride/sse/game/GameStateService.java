@@ -15,7 +15,9 @@
  *
  * Created by jett on 3/6/18.
  */
-package com.clueride.sse;
+package com.clueride.sse.game;
+
+import com.clueride.sse.common.ServerSentEventChannel;
 
 /**
  * Defines operations on the Game State publish/subscribe service.
