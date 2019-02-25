@@ -21,8 +21,12 @@ public class Main {
      */
     static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
-        // in com.clueride package
-        final ResourceConfig rc = new ResourceConfig().packages("com.clueride");
+        // in the listed packages
+        final ResourceConfig rc = new ResourceConfig().packages(
+                "com.clueride",
+                "com.clueride.game",
+                "com.clueride.heartbeat"
+        );
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
@@ -31,8 +35,8 @@ public class Main {
 
     /**
      * Main method.
-     * @param args
-     * @throws IOException
+     * @param args array of strings passed on command line.
+     * @throws IOException if there's a problem reading console.
      */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();

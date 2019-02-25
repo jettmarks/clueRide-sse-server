@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Jett Marks
+ * Copyright 2019 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,39 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 3/9/18.
+ * Created by jett on 2/24/19.
  */
-package com.clueride.sse;
+package com.clueride.sse.common;
 
 import org.glassfish.jersey.media.sse.OutboundEvent;
 
 /**
- * Constructs the different events produced for the Game State.
- *
- * The following events are constructed:
- * <UL>
- *     <li>Game State message updating subscribers to game state changes.</li>
- *     <li>Closing message to alert subscribers the channel is closing down.</li>
- *     <li>Keep-alive message sent when no message has been broadcast for 30 seconds.</li>
- * </UL>
+ * Common method for bundling up an event.
  */
-public class GameStateEventFactory {
-    static Integer messageId = 101;
+public class EventBundler {
 
-    public OutboundEvent getGameStateEvent(String payload) {
-        return bundleMessage(payload);
-    }
+    private static int messageId = 101;
 
-    public OutboundEvent getClosingMessage() {
-        return bundleMessage("Closing channel");
-    }
-
-    public OutboundEvent getKeepAliveEvent() {
-        return bundleMessage(null);
-    }
-
-    private OutboundEvent bundleMessage(String message) {
+    public OutboundEvent bundleMessage(String message) {
         final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
+        /* Apparently, this has to be the string "message". */
         eventBuilder.name("message");
         eventBuilder.id("" + generateMessageId());
         if (message == null) {

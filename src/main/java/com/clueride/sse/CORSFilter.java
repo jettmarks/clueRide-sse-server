@@ -18,20 +18,26 @@
 package com.clueride.sse;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
+
+import org.apache.log4j.Logger;
 
 /**
  * Handles the CORS responses for the Jersey requests.
  */
 @Provider
 public class CORSFilter implements ContainerResponseFilter {
+    private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     public void filter(ContainerRequestContext request,
                        ContainerResponseContext response) throws IOException {
+        LOGGER.debug("Adding Headers");
         response.getHeaders().add("Access-Control-Allow-Origin", "*");
         response.getHeaders().add("Access-Control-Allow-Headers",
                 "origin, content-type, accept, authorization");

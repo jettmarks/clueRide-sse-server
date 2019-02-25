@@ -15,7 +15,7 @@
  *
  * Created by jett on 3/6/18.
  */
-package com.clueride.sse;
+package com.clueride.sse.game;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,19 +23,21 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
+import com.clueride.sse.common.KeepAliveGenerator;
+import com.clueride.sse.common.ServerSentEventChannel;
+
 /**
  * Implementation of GameStateService.
  */
 public class GameStateServiceImpl implements GameStateService {
     private static final Logger LOGGER = Logger.getLogger(GameStateServiceImpl.class);
 
-    private Map<Integer,ServerSentEventChannel> channelMap = new HashMap<>();
+    private Map<Integer, ServerSentEventChannel> channelMap = new HashMap<>();
     private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
 
     @Override
     public ServerSentEventChannel openChannelResources(Integer outingId) {
-        ServerSentEventChannel channel = getEventChannel(outingId);
-        return channel;
+        return getEventChannel(outingId);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class GameStateServiceImpl implements GameStateService {
         keepAliveGenerator.reset();
     }
 
-    ServerSentEventChannel getEventChannel(Integer outingId) {
+    private ServerSentEventChannel getEventChannel(Integer outingId) {
         ServerSentEventChannel channel;
         if (channelMap.containsKey(outingId)) {
             channel = channelMap.get(outingId);
