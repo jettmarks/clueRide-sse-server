@@ -26,10 +26,28 @@ public class EventBundler {
 
     private static int messageId = 101;
 
+    /**
+     * Generic message defaults to the eventType 'message'.
+     *
+     * @param message String to be sent as the payload.
+     * @return the event bundled up for broadcasting.
+     */
     public OutboundEvent bundleMessage(String message) {
+        return bundleMessage(message, "message");
+    }
+
+    public OutboundEvent bundleAnswerSummaryMessage(String message) {
+        return bundleMessage(message, "answer-summary");
+    }
+
+    public OutboundEvent bundleGameStateMessage(String message) {
+        return bundleMessage(message, "game-state");
+    }
+
+    private OutboundEvent bundleMessage(String message, String eventType) {
         final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
         /* Apparently, this has to be the string "message". */
-        eventBuilder.name("message");
+        eventBuilder.name(eventType);
         eventBuilder.id("" + generateMessageId());
         if (message == null) {
             eventBuilder.comment("Keep Alive");

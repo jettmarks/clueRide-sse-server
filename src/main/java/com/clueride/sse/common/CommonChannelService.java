@@ -29,4 +29,13 @@ public interface CommonChannelService {
      */
     ServerSentEventChannel openChannelResources();
 
+    /**
+     * Retrieve a previously opened Event Channel for the given Outing and Puzzle.
+     *
+     * @param outingId unique identifier for the outing.
+     * @return instance of {@link ServerSentEventChannel} for events specific
+     * to the Outing and the Puzzle.
+     */
+    ServerSentEventChannel getEventChannel(Integer outingId);
+
 }

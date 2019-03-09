@@ -17,12 +17,11 @@
  */
 package com.clueride.sse.game;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
+import com.clueride.sse.common.CommonChannelService;
+import com.clueride.sse.common.CommonChannelServiceImpl;
 import com.clueride.sse.common.KeepAliveGenerator;
 import com.clueride.sse.common.ServerSentEventChannel;
 
@@ -32,17 +31,17 @@ import com.clueride.sse.common.ServerSentEventChannel;
 public class GameStateServiceImpl implements GameStateService {
     private static final Logger LOGGER = Logger.getLogger(GameStateServiceImpl.class);
 
-    private Map<Integer, ServerSentEventChannel> channelMap = new HashMap<>();
     private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
+    private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
 
     @Override
     public ServerSentEventChannel openChannelResources(Integer outingId) {
-        return getEventChannel(outingId);
+        return commonChannelService.getEventChannel(outingId);
     }
 
     @Override
     public void releaseChannelResources(Integer outingId) {
-        ServerSentEventChannel channel = getEventChannel(outingId);
+        ServerSentEventChannel channel = commonChannelService.getEventChannel(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
         broadcaster.broadcast(gameStateEventFactory.getClosingMessage());
         channel.getKeepAliveGenerator().release();
@@ -51,22 +50,11 @@ public class GameStateServiceImpl implements GameStateService {
     @Override
     public void broadcastMessage(Integer outingId, String message) {
         LOGGER.debug(String.format("Broadcasting on Outing %d: %s", outingId, message));
-        ServerSentEventChannel channel = getEventChannel(outingId);
+        ServerSentEventChannel channel = commonChannelService.getEventChannel(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
         broadcaster.broadcast(gameStateEventFactory.getGameStateEvent(message));
         KeepAliveGenerator keepAliveGenerator = channel.getKeepAliveGenerator();
         keepAliveGenerator.reset();
-    }
-
-    private ServerSentEventChannel getEventChannel(Integer outingId) {
-        ServerSentEventChannel channel;
-        if (channelMap.containsKey(outingId)) {
-            channel = channelMap.get(outingId);
-        } else {
-            channel = new ServerSentEventChannel(outingId);
-            channelMap.put(outingId, channel);
-        }
-        return channel;
     }
 
 }
