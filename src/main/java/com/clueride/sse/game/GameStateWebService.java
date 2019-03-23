@@ -46,13 +46,15 @@ public class GameStateWebService {
 
     @GET
     @Produces(SseFeature.SERVER_SENT_EVENTS)
-    @Path("{outingId}")
+    @Path("{outingId}/{principal}")
     public EventOutput subscribeToOutingIdChannel(
             @PathParam("outingId") Integer outingId,
+            @PathParam("principal") String principal,
             @QueryParam("r") final String requestId
     ) {
-        LOGGER.debug("Outing ID: " + outingId + "  Request ID: " + requestId);
-        ServerSentEventChannel channel = gameStateService.openChannelResources(outingId);
+        LOGGER.debug("Principal " + principal + " requesting session on Outing ID: "
+                + outingId + "  Request ID: " + requestId);
+        ServerSentEventChannel channel = gameStateService.openChannelResources(outingId, principal);
         SseBroadcaster broadcaster = channel.getBroadcaster();
         EventOutput eventOutput = new EventOutput();
         broadcaster.add(eventOutput);

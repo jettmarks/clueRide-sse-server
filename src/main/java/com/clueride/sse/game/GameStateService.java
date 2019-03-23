@@ -26,18 +26,21 @@ public interface GameStateService {
     /**
      * Channels are opened against an outing.
      * @param outingId Unique identifier for the associated Outing.
+     * @param principal Unique identifier for the player (usually their email address).
      * @return ServerSentEventChannel holding the EventOutput to be used.
      */
-    ServerSentEventChannel openChannelResources(Integer outingId);
+    ServerSentEventChannel openChannelResources(Integer outingId, String principal);
 
     /**
      * When no more broadcast messages will be sent, this releases the resources.
      *
      * Note that the client Web Service is expected to send out close messages to
      * the subscribers. This only shuts down the resources.
+     *
      * @param outingId Unique identifier for the associated Outing.
+     * @param principal Unique identifier for the player (usually their email address).
      */
-    void releaseChannelResources(Integer outingId);
+    void releaseChannelResources(Integer outingId, String principal);
 
     /**
      * Sends the message to the matching outingId's channel.

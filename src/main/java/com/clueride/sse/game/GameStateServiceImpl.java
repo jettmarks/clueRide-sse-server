@@ -17,6 +17,10 @@
  */
 package com.clueride.sse.game;
 
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
@@ -33,14 +37,19 @@ public class GameStateServiceImpl implements GameStateService {
 
     private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
     private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
+    private Map<Integer, String> lastMessagePerOuting = new HashMap<>();
 
     @Override
-    public ServerSentEventChannel openChannelResources(Integer outingId) {
+    public ServerSentEventChannel openChannelResources(
+            Integer outingId,
+            String principal
+    ) {
+
         return commonChannelService.getEventChannel(outingId);
     }
 
     @Override
-    public void releaseChannelResources(Integer outingId) {
+    public void releaseChannelResources(Integer outingId, String principal) {
         ServerSentEventChannel channel = commonChannelService.getEventChannel(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
         broadcaster.broadcast(gameStateEventFactory.getClosingMessage());
@@ -55,6 +64,22 @@ public class GameStateServiceImpl implements GameStateService {
         broadcaster.broadcast(gameStateEventFactory.getGameStateEvent(message));
         KeepAliveGenerator keepAliveGenerator = channel.getKeepAliveGenerator();
         keepAliveGenerator.reset();
+
+        /* Save this for any sessions joining the channel. */
+        lastMessagePerOuting.put(outingId, message);
+    }
+
+    /**
+     * When a channel is opened, if there are any messages that had been broadcast on that channel,
+     * repeat the message which was last sent.
+     *
+     * @param outingId Unique identifier for the Outing.
+     */
+    private void echoLastGameStateOnOuting(Integer outingId) {
+        if (lastMessagePerOuting.containsKey(outingId)) {
+            /* This may not work if we haven't returned the channel to the client yet. */
+            broadcastMessage(outingId, lastMessagePerOuting.get(outingId));
+        }
     }
 
 }

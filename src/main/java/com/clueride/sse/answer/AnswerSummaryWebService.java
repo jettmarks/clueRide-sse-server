@@ -60,7 +60,8 @@ public class AnswerSummaryWebService {
         LOGGER.debug("Outing ID: " + outingId);
 
         ServerSentEventChannel channel = commonChannelService.getEventChannel(
-                outingId
+                outingId,
+                "tempPrincipal"
         );
         SseBroadcaster broadcaster = channel.getBroadcaster();
 
