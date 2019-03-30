@@ -14,6 +14,7 @@ import java.net.URI;
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
     static final String BASE_URI = "http://0.0.0.0:6543/rest/";
+    static boolean serverRunning = true;
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -40,10 +41,29 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
-        System.in.read();
-        server.stop();
+        System.out.println(String.format("SSE app started listening at "
+                + "%s", BASE_URI));
+
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                System.out.println("SSE beginning shutdown");
+                server.shutdown();
+                serverRunning = false;
+                System.exit(0);
+            }
+        });
+
+        while(serverRunning) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {}
+        }
+
+        System.out.println("SSE now down");
     }
+
 }
 
