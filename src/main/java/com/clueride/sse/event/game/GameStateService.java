@@ -15,7 +15,7 @@
  *
  * Created by jett on 3/6/18.
  */
-package com.clueride.sse.game;
+package com.clueride.sse.event.game;
 
 import com.clueride.sse.common.ServerSentEventChannel;
 

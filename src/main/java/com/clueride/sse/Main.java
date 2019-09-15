@@ -26,7 +26,7 @@ public class Main {
         final ResourceConfig rc = new ResourceConfig().packages(
                 "com.clueride",
                 "com.clueride.game",
-                "com.clueride.heartbeat"
+                "com.clueride.tether"
         );
 
         // create and start a new instance of grizzly http server

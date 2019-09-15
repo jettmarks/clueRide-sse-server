@@ -19,6 +19,9 @@ package com.clueride.sse.common;
 
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
+import com.clueride.sse.keepalive.KeepAliveEventFactory;
+import com.clueride.sse.keepalive.KeepAliveGenerator;
+
 /**
  * Support for pushing an event to all members of a group.
  *

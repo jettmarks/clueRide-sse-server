@@ -13,72 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 3/6/19.
+ * Created by jett on 2/24/19.
  */
-package com.clueride.sse.answer;
+package com.clueride.sse.event.tether;
 
 import java.lang.invoke.MethodHandles;
 
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 import org.glassfish.jersey.media.sse.SseFeature;
 
-import com.clueride.sse.common.CommonChannelService;
-import com.clueride.sse.common.CommonChannelServiceImpl;
 import com.clueride.sse.common.ServerSentEventChannel;
 
 /**
- * REST API for subscribing to and broadcasting to the Puzzle Events.
+ * Broadcasts a Tether to subscribers who wish to follow the
+ * Tethered Position (usually the Guide).
+ *
+ * For subscribers providing an Outing ID, the tethered position
+ * follows the tethered position for that Outing.
+ * TODO: What does MobiLoc do? (See SSE-5's PR commit comments)
  */
 @Singleton
-@Path("answer-summary")
-public class AnswerSummaryWebService {
+@Path("tether")
+public class TetherWebService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
-    private AnswerSummaryService answerSummaryService = new AnswerSummaryServiceImpl();
-
-    private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
+    private TetherService tetherService = new TetherServiceImpl();
 
     @GET
     @Produces(SseFeature.SERVER_SENT_EVENTS)
-    @Path("{outingId}")
-    public EventOutput subscribeToOutingIdChannel(
-            @PathParam("outingId") Integer outingId,
+    public EventOutput subscribeToTether(
             @QueryParam("r") final String requestId
     ) {
-        LOGGER.debug("Outing ID: " + outingId);
-
-        ServerSentEventChannel channel = commonChannelService.getEventChannel(
-                outingId
-        );
+        LOGGER.debug("Tether subscribe - requestId: " + requestId);
+        ServerSentEventChannel channel = tetherService.openChannelResources(null);
         SseBroadcaster broadcaster = channel.getBroadcaster();
-
         EventOutput eventOutput = new EventOutput();
         broadcaster.add(eventOutput);
         return eventOutput;
     }
 
-    @POST
-    @Path("{outingId}")
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.TEXT_PLAIN)
-    public String broadcastMessage(
-            String answerSummary,
-            @PathParam("outingId") Integer outingId
-    ) {
-        String messageId = answerSummaryService.broadcastMessage(outingId, answerSummary);
-        return "Message ID '" + messageId + "' has been broadcast.";
-    }
+    // TODO: POST is required to broadcast the Tether Event.
 
 }

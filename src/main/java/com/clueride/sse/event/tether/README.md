@@ -1,3 +1,5 @@
+TODO: This appears to be out-of-date
+
 The endpoint defined within this package listens for connection
 requests on the `heartbeat` channel. 
 

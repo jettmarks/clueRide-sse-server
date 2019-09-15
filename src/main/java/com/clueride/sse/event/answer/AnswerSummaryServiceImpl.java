@@ -15,7 +15,7 @@
  *
  * Created by jett on 3/7/19.
  */
-package com.clueride.sse.answer;
+package com.clueride.sse.event.answer;
 
 import java.lang.invoke.MethodHandles;
 

@@ -15,7 +15,7 @@
  *
  * Created by jett on 2/24/19.
  */
-package com.clueride.sse.heartbeat;
+package com.clueride.sse.event.tether;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -27,32 +27,32 @@ import com.clueride.sse.common.ServerSentEventChannel;
 import static java.lang.Thread.*;
 
 /**
- * Implementation of HeartbeatService.
+ * Implementation of TetherService.
  */
-public class HeartbeatServiceImpl implements HeartbeatService {
+public class TetherServiceImpl implements TetherService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
     private static final Integer BROADCAST_ALL = -1;
-    private static Thread heartbeatRunnable = initHeartbeatThread();
+    private static Thread tetherRunnable = initTetherThread();
 
     private static Map<Integer, ServerSentEventChannel> channelMap = new HashMap<>();
 
-    private static final HeartbeatEventFactory heartbeatEventFactory = new HeartbeatEventFactory();
+    private static final TetherEventFactory TETHER_EVENT_FACTORY = new TetherEventFactory();
 
     @Override
     public ServerSentEventChannel openChannelResources(Integer outingId) {
         return getEventChannel(outingId);
     }
 
-    private static Thread initHeartbeatThread() {
+    private static Thread initTetherThread() {
         Thread thread = new Thread(
             new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
                         for (ServerSentEventChannel channel : channelMap.values()) {
-                            LOGGER.debug("Sending Heartbeat to Outing " + channel.getOutingId());
+                            LOGGER.debug("Sending Tether to Outing " + channel.getOutingId());
                             channel.getBroadcaster().broadcast(
-                                    heartbeatEventFactory.getHeartbeatEvent()
+                                    TETHER_EVENT_FACTORY.getHeartbeatEvent()
                             );
                         }
                         try {
@@ -71,7 +71,7 @@ public class HeartbeatServiceImpl implements HeartbeatService {
     @Override
     public void releaseChannelResources(Integer outingId) {
         try {
-            heartbeatRunnable.join();
+            tetherRunnable.join();
         } catch (InterruptedException e) {
             // Eat the exception when we bring this down intentionally
         }

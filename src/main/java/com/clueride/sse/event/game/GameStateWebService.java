@@ -15,7 +15,7 @@
  *
  * Created by jett on 2/25/18.
  */
-package com.clueride.sse.game;
+package com.clueride.sse.event.game;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -35,7 +35,8 @@ import org.glassfish.jersey.media.sse.SseFeature;
 import com.clueride.sse.common.ServerSentEventChannel;
 
 /**
- * Broadcasts posted Game State changes to each of the clients who have subscribed to the events for a given Outing ID.
+ * REST API for broadcasting Game State changes to each of the clients
+ * who have subscribed to the events for a given Outing ID.
  */
 @Singleton
 @Path("game-state-broadcast")

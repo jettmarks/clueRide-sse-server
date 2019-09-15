@@ -15,9 +15,12 @@
  *
  * Created by jett on 2/24/19.
  */
-package com.clueride.sse.common;
+package com.clueride.sse.keepalive;
 
 import org.glassfish.jersey.media.sse.OutboundEvent;
+
+import com.clueride.sse.common.EventBundler;
+import com.clueride.sse.common.EventFactory;
 
 /**
  * Implementation of EventFactory that can produce just the Keep Alive event.
