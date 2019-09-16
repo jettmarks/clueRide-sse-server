@@ -15,14 +15,14 @@
  *
  * Created by jett on 3/6/18.
  */
-package com.clueride.sse.game;
+package com.clueride.sse.event.game;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 import com.clueride.sse.common.CommonChannelService;
 import com.clueride.sse.common.CommonChannelServiceImpl;
-import com.clueride.sse.common.KeepAliveGenerator;
+import com.clueride.sse.keepalive.KeepAliveGenerator;
 import com.clueride.sse.common.ServerSentEventChannel;
 
 /**

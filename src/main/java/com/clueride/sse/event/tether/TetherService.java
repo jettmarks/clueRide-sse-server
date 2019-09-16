@@ -15,18 +15,20 @@
  *
  * Created by jett on 2/24/19.
  */
-package com.clueride.sse.heartbeat;
+package com.clueride.sse.event.tether;
 
 import com.clueride.sse.common.ServerSentEventChannel;
 
 /**
- * Defines operations on the Heartbeat publish/subscribe service.
+ * Defines operations on the Tethered Position publish/subscribe service.
  */
-public interface HeartbeatService {
+// TODO: SSE-8 rename Heartbeat to Tether.
+public interface TetherService {
 
     /**
      * Channels are optionally opened against an Outing.
-     * @param outingId when provides, allows returning the tethered
+     * TODO: Is this currently used by MobiLoc without an Outing? (See SSE-5's PR commit comments)
+     * @param outingId when provided, allows returning the tethered
      *                 position data for the outing.
      * @return Channel holding the EventOutput events, with or without tether data.
      */

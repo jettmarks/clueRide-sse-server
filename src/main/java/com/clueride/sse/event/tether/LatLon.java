@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 3/6/19.
+ * Created by jett on 2/24/19.
  */
-package com.clueride.sse.answer;
+package com.clueride.sse.event.tether;
 
 /**
- * Defines operations on Puzzle State event subscriptions.
+ * Holds latitude and longitude.
+ *
+ * Main purpose is to marshall JSON via Jersey.
  */
-public interface AnswerSummaryService {
-
-    /**
-     * Sends the given message (assumed to be an AnswerSummary in JSON) to
-     * all subscribers listening for updates to the identified answer and outing.
-     *
-     * @param outingId unique identifier for the Outing.
-     * @param message JSON-formatted Answer Summary for the Puzzle on the given Outing.
-     */
-    String broadcastMessage(Integer outingId, String message);
-
+public class LatLon {
+    double lat;
+    double lon;
 }

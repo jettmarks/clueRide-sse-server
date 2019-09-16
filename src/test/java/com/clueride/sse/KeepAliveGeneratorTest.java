@@ -23,7 +23,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.clueride.sse.common.KeepAliveGenerator;
+import com.clueride.sse.keepalive.KeepAliveGenerator;
 import static org.testng.Assert.*;
 
 /**

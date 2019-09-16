@@ -15,7 +15,7 @@
  *
  * Created by jett on 3/10/18.
  */
-package com.clueride.sse.common;
+package com.clueride.sse.keepalive;
 
 import java.util.concurrent.TimeUnit;
 

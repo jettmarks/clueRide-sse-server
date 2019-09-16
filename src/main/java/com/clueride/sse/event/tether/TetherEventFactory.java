@@ -15,7 +15,7 @@
  *
  * Created by jett on 2/24/19.
  */
-package com.clueride.sse.heartbeat;
+package com.clueride.sse.event.tether;
 
 import java.lang.invoke.MethodHandles;
 
@@ -30,7 +30,7 @@ import com.clueride.sse.common.EventBundler;
  * Creates the different events for Heartbeat, tethered or without
  * the tether.
  */
-public class HeartbeatEventFactory {
+public class TetherEventFactory {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     EventBundler eventBundler = new EventBundler();

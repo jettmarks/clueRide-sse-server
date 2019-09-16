@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Jett Marks
+ * Copyright 2019 Jett Marks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by jett on 3/9/18.
+ * Created by jett on 3/7/19.
  */
-package com.clueride.sse.game;
+package com.clueride.sse.event.answer;
 
 import org.glassfish.jersey.media.sse.OutboundEvent;
 
 import com.clueride.sse.common.EventBundler;
 
 /**
- * Constructs the different events produced for the Game State.
- *
- * The following events are constructed:
- * <UL>
- *     <li>Game State message updating subscribers to game state changes.</li>
- *     <li>Closing message to alert subscribers the channel is closing down.</li>
- * </UL>
+ * Knows how to construct the different events produced for the Puzzle State.
  */
-public class GameStateEventFactory {
+public class AnswerSummaryEventFactory {
     EventBundler eventBundler = new EventBundler();
 
-    public OutboundEvent getGameStateEvent(String payload) {
-        return eventBundler.bundleMessage(payload);
-    }
-
-    public OutboundEvent getClosingMessage() {
-        return eventBundler.bundleMessage("Closing channel");
+    public OutboundEvent generateEvent(String payload) {
+        return eventBundler.bundleAnswerSummaryMessage(payload);
     }
 
 }
