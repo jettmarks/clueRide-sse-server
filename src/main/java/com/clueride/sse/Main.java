@@ -1,11 +1,13 @@
 package com.clueride.sse;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-
 import java.io.IOException;
 import java.net.URI;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.sse.SseFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 
 /**
  * Main class.
@@ -23,11 +25,14 @@ public class Main {
     static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
         // in the listed packages
-        final ResourceConfig rc = new ResourceConfig().packages(
-                "com.clueride",
-                "com.clueride.game",
-                "com.clueride.tether"
-        );
+        final ResourceConfig rc = new ResourceConfig()
+                .packages(
+                        "com.clueride",
+                        "com.clueride.sse.common",
+                        "com.clueride.sse.event"
+                )
+                .register(SseFeature.class)
+                .register(JacksonFeature.class);
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI

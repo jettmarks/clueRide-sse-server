@@ -18,12 +18,14 @@
 package com.clueride.sse.common;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventOutput;
@@ -51,6 +53,13 @@ public class ChannelWebService {
         EventOutput eventOutput = new EventOutput();
         broadcaster.add(eventOutput);
         return eventOutput;
+    }
+
+    @GET
+    @Path("map")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<Integer, CommonChannel> getChannelMap() {
+        return commonChannelService.getChannelMap();
     }
 
 }

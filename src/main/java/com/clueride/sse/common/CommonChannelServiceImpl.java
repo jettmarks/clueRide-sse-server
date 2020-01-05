@@ -32,7 +32,7 @@ public class CommonChannelServiceImpl implements CommonChannelService {
     private static final Integer NO_OUTING = -1;
 
     /* Map of the channels for each Outing. */
-    private static final Map<Integer,ServerSentEventChannel> channelsPerOuting = new HashMap<>();
+    private static final Map<Integer,CommonChannel> channelsPerOuting = new HashMap<>();
 
     @Override
     public ServerSentEventChannel openChannelResources() {
@@ -44,10 +44,29 @@ public class CommonChannelServiceImpl implements CommonChannelService {
 
     @Override
     public ServerSentEventChannel getEventChannel(Integer outingId) {
+        // TODO: Change API to accept this from the client -- and update client too.
+        int userId = 47;
+
+        CommonChannel channel = channelsPerOuting.get(outingId);
         if (!channelsPerOuting.containsKey(outingId)) {
-            channelsPerOuting.put(outingId, new ServerSentEventChannel(outingId));
+            channel = new CommonChannel(
+                    new ServerSentEventChannel(outingId),
+                    outingId
+            );
+
+            channelsPerOuting.put(
+                    outingId,
+                    channel
+            );
         }
-        return channelsPerOuting.get(outingId);
+        channel.subscribeUser(userId);
+
+        return channelsPerOuting.get(outingId).getServerSentEventChannel();
+    }
+
+    @Override
+    public Map<Integer, CommonChannel> getChannelMap() {
+        return channelsPerOuting;
     }
 
 }
