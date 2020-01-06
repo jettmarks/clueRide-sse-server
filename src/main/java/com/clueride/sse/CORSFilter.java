@@ -35,15 +35,19 @@ public class CORSFilter implements ContainerResponseFilter {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
-    public void filter(ContainerRequestContext request,
-                       ContainerResponseContext response) throws IOException {
+    public void filter(
+            ContainerRequestContext request,
+            ContainerResponseContext response
+    ) throws IOException {
         LOGGER.debug("Adding Headers");
         response.getHeaders().add("Access-Control-Allow-Origin", "*");
         response.getHeaders().add("Access-Control-Allow-Headers",
-                "origin, content-type, accept, authorization");
+                "origin, content-type, accept, authorization, headers, lazyinit, lazyupdate, normalizednames"
+        );
         response.getHeaders().add("Access-Control-Allow-Credentials", "true");
         response.getHeaders().add("Access-Control-Allow-Methods",
-                "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+                "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+        );
     }
 
 }
