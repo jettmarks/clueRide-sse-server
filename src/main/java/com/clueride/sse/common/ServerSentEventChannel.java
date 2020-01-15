@@ -38,6 +38,12 @@ public class ServerSentEventChannel {
     /* This is chosen to be a bit under the 45-second interval that the client uses for checking up on us. */
     private final static int KEEP_ALIVE_INTERVAL = 35;
 
+    /** Empty default constructor for JAXB. */
+    public ServerSentEventChannel() {
+        this.outingId = -1;
+        keepAliveGenerator = null;
+    }
+
     public ServerSentEventChannel(
             Integer outingId
     ) {

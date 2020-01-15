@@ -17,6 +17,8 @@
  */
 package com.clueride.sse.common;
 
+import java.util.Map;
+
 /**
  * Defines common operations on Channels.
  */
@@ -37,5 +39,11 @@ public interface CommonChannelService {
      * to the Outing and the Puzzle.
      */
     ServerSentEventChannel getEventChannel(Integer outingId);
+
+    /**
+     * Returns the map of Channels per Outing ID.
+     * @return Map of ServerSentEventChannel per Integer outingId.
+     */
+    Map<Integer, CommonChannel> getChannelMap();
 
 }

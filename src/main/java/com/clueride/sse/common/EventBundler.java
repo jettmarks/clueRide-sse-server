@@ -19,6 +19,8 @@ package com.clueride.sse.common;
 
 import org.glassfish.jersey.media.sse.OutboundEvent;
 
+import com.clueride.sse.event.EventType;
+
 /**
  * Common method for bundling up an event.
  */
@@ -29,6 +31,8 @@ public class EventBundler {
     /**
      * Generic message defaults to the eventType 'message'.
      *
+     * @deprecated use {@link #bundleMessage(String,EventType)} instead.
+     *
      * @param message String to be sent as the payload.
      * @return the event bundled up for broadcasting.
      */
@@ -36,12 +40,38 @@ public class EventBundler {
         return bundleMessage(message, "message");
     }
 
+    /**
+     * @deprecated use {@link #bundleMessage(String,EventType)} instead.
+     *
+     * @param message JSON-representation of the event.
+     * @return
+     */
     public OutboundEvent bundleAnswerSummaryMessage(String message) {
         return bundleMessage(message, "answer-summary");
     }
 
+    /**
+     * @deprecated use {@link #bundleMessage(String,EventType)} instead.
+     *
+     * @param message JSON-representation of the event.
+     * @return
+     */
     public OutboundEvent bundleGameStateMessage(String message) {
         return bundleMessage(message, "game-state");
+    }
+
+    /**
+     * Wraps a message string (generally JSON represention of an event), with the SSE stuff required to broadcast the
+     * message of the given Event Type.
+     * @param message JSON-representation of the event.
+     * @param eventType Type of the Event.
+     * @return An OutboundEvent instance ready for broadcast.
+     */
+    public OutboundEvent bundleMessage(String message, EventType eventType) {
+        return bundleMessage(
+                message,
+                eventType.eventName
+        );
     }
 
     private OutboundEvent bundleMessage(String message, String eventType) {
