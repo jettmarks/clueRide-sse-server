@@ -41,28 +41,9 @@ public class EventBundler {
     }
 
     /**
-     * @deprecated use {@link #bundleMessage(String,EventType)} instead.
-     *
-     * @param message JSON-representation of the event.
-     * @return
-     */
-    public OutboundEvent bundleAnswerSummaryMessage(String message) {
-        return bundleMessage(message, "answer-summary");
-    }
-
-    /**
-     * @deprecated use {@link #bundleMessage(String,EventType)} instead.
-     *
-     * @param message JSON-representation of the event.
-     * @return
-     */
-    public OutboundEvent bundleGameStateMessage(String message) {
-        return bundleMessage(message, "game-state");
-    }
-
-    /**
      * Wraps a message string (generally JSON represention of an event), with the SSE stuff required to broadcast the
      * message of the given Event Type.
+     *
      * @param message JSON-representation of the event.
      * @param eventType Type of the Event.
      * @return An OutboundEvent instance ready for broadcast.
@@ -76,7 +57,6 @@ public class EventBundler {
 
     private OutboundEvent bundleMessage(String message, String eventType) {
         final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
-        /* Apparently, this has to be the string "message". */
         eventBuilder.name(eventType);
         eventBuilder.id("" + generateMessageId());
         if (message == null) {

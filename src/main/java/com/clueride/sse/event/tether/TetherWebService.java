@@ -17,20 +17,13 @@
  */
 package com.clueride.sse.event.tether;
 
-import java.lang.invoke.MethodHandles;
-
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-
-import org.apache.log4j.Logger;
-import org.glassfish.jersey.media.sse.EventOutput;
-import org.glassfish.jersey.media.sse.SseBroadcaster;
-import org.glassfish.jersey.media.sse.SseFeature;
-
-import com.clueride.sse.common.ServerSentEventChannel;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Broadcasts a Tether to subscribers who wish to follow the
@@ -38,28 +31,22 @@ import com.clueride.sse.common.ServerSentEventChannel;
  *
  * For subscribers providing an Outing ID, the tethered position
  * follows the tethered position for that Outing.
- * TODO: What does MobiLoc do? (See SSE-5's PR commit comments)
  */
 @Singleton
 @Path("tether")
 public class TetherWebService {
-    private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
-
     private TetherService tetherService = new TetherServiceImpl();
 
-    @GET
-    @Produces(SseFeature.SERVER_SENT_EVENTS)
-    public EventOutput subscribeToTether(
-            @QueryParam("r") final String requestId
+    @POST
+    @Path("{outingId}")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String broadcastMessage(
+            LatLon latLon,
+            @PathParam("outingId") Integer outingId
     ) {
-        LOGGER.debug("Tether subscribe - requestId: " + requestId);
-        ServerSentEventChannel channel = tetherService.openChannelResources(null);
-        SseBroadcaster broadcaster = channel.getBroadcaster();
-        EventOutput eventOutput = new EventOutput();
-        broadcaster.add(eventOutput);
-        return eventOutput;
+        Integer messageId = tetherService.broadcastTetherPosition(outingId, latLon);
+        return "Message ID '" + messageId + "' has been broadcast.";
     }
-
-    // TODO: POST is required to broadcast the Tether Event.
 
 }

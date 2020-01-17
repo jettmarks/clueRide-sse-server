@@ -24,7 +24,9 @@ import org.glassfish.jersey.media.sse.OutboundEvent;
 
 import com.clueride.sse.common.CommonChannelService;
 import com.clueride.sse.common.CommonChannelServiceImpl;
+import com.clueride.sse.common.EventBundler;
 import com.clueride.sse.common.ServerSentEventChannel;
+import com.clueride.sse.event.EventType;
 
 /**
  * Implementation of {@link AnswerSummaryService}.
@@ -33,7 +35,7 @@ public class AnswerSummaryServiceImpl implements AnswerSummaryService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
-    private AnswerSummaryEventFactory answerSummaryEventFactory = new AnswerSummaryEventFactory();
+    private EventBundler eventBundler = new EventBundler();
 
     @Override
     public String broadcastMessage(
@@ -51,7 +53,7 @@ public class AnswerSummaryServiceImpl implements AnswerSummaryService {
                 outingId
         );
 
-        OutboundEvent event = answerSummaryEventFactory.generateEvent(message);
+        OutboundEvent event = eventBundler.bundleMessage(message, EventType.ANSWER_SUMMARY);
         channel.getBroadcaster().broadcast(event);
 
         channel.getKeepAliveGenerator().reset();

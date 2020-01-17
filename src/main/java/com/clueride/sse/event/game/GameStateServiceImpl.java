@@ -22,8 +22,9 @@ import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 import com.clueride.sse.common.CommonChannelService;
 import com.clueride.sse.common.CommonChannelServiceImpl;
-import com.clueride.sse.keepalive.KeepAliveGenerator;
+import com.clueride.sse.common.EventBundler;
 import com.clueride.sse.common.ServerSentEventChannel;
+import com.clueride.sse.event.EventType;
 
 /**
  * Implementation of GameStateService.
@@ -31,30 +32,22 @@ import com.clueride.sse.common.ServerSentEventChannel;
 public class GameStateServiceImpl implements GameStateService {
     private static final Logger LOGGER = Logger.getLogger(GameStateServiceImpl.class);
 
-    private final GameStateEventFactory gameStateEventFactory = new GameStateEventFactory();
     private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
+    private EventBundler eventBundler = new EventBundler();
 
     @Override
-    public ServerSentEventChannel openChannelResources(Integer outingId) {
-        return commonChannelService.getEventChannel(outingId);
-    }
-
-    @Override
-    public void releaseChannelResources(Integer outingId) {
+    public void broadcastMessage(Integer outingId, String gameStateEventAsJSON) {
+        LOGGER.debug(
+                String.format(
+                        "Broadcasting Game State on Outing %d: %s",
+                        outingId,
+                        gameStateEventAsJSON
+                )
+        );
         ServerSentEventChannel channel = commonChannelService.getEventChannel(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
-        broadcaster.broadcast(gameStateEventFactory.getClosingMessage());
-        channel.getKeepAliveGenerator().release();
-    }
-
-    @Override
-    public void broadcastMessage(Integer outingId, String message) {
-        LOGGER.debug(String.format("Broadcasting on Outing %d: %s", outingId, message));
-        ServerSentEventChannel channel = commonChannelService.getEventChannel(outingId);
-        SseBroadcaster broadcaster = channel.getBroadcaster();
-        broadcaster.broadcast(gameStateEventFactory.getGameStateEvent(message));
-        KeepAliveGenerator keepAliveGenerator = channel.getKeepAliveGenerator();
-        keepAliveGenerator.reset();
+        broadcaster.broadcast(eventBundler.bundleMessage(gameStateEventAsJSON, EventType.GAME_STATE));
+        channel.getKeepAliveGenerator().reset();
     }
 
 }

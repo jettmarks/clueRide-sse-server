@@ -17,37 +17,16 @@
  */
 package com.clueride.sse.event.tether;
 
-import com.clueride.sse.common.ServerSentEventChannel;
-
 /**
  * Defines operations on the Tethered Position publish/subscribe service.
  */
-// TODO: SSE-8 rename Heartbeat to Tether.
 public interface TetherService {
-
-    /**
-     * Channels are optionally opened against an Outing.
-     * TODO: Is this currently used by MobiLoc without an Outing? (See SSE-5's PR commit comments)
-     * @param outingId when provided, allows returning the tethered
-     *                 position data for the outing.
-     * @return Channel holding the EventOutput events, with or without tether data.
-     */
-    ServerSentEventChannel openChannelResources(Integer outingId);
-
-    /**
-     * When no more broadcast messages will be sent, this releases the resources.
-     *
-     * Note that the client Web Service is expected to send out close messages to
-     * the subscribers. This only shuts down the resources.
-     * @param outingId Unique identifier for the associated Outing.
-     */
-    void releaseChannelResources(Integer outingId);
 
     /**
      * For subscribers to an Outing, send this tether position.
      * @param outingId unique identifier for the Outing.
      * @param latLon new value for tether position to broadcast.
      */
-    void broadcastTetherPosition(Integer outingId, LatLon latLon);
+    Integer broadcastTetherPosition(Integer outingId, LatLon latLon);
 
 }

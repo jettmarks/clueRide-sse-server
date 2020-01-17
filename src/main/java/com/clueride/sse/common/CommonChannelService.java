@@ -19,6 +19,8 @@ package com.clueride.sse.common;
 
 import java.util.Map;
 
+import org.glassfish.jersey.media.sse.EventOutput;
+
 /**
  * Defines common operations on Channels.
  */
@@ -45,5 +47,22 @@ public interface CommonChannelService {
      * @return Map of ServerSentEventChannel per Integer outingId.
      */
     Map<Integer, CommonChannel> getChannelMap();
+
+    /**
+     * Given an Outing ID, return an instance of EventOutput which holds and open
+     * session against the Outing's channel.
+     *
+     * @param outingId unique identifier for the Outing and its corresponding Channel.
+     * @return instance of EventOutput suitable for returning to the client to hold session open.
+     */
+    EventOutput getEventOutputForOuting(Integer outingId);
+
+    /**
+     * Return an instance of what?
+     *
+     * TODO: SSE-17 Turn this into the one that listens for Badges against a User ID.
+     * @return crap.
+     */
+    EventOutput getGenericEventOutput();
 
 }

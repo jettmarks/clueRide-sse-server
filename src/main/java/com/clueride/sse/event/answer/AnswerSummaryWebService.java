@@ -17,57 +17,21 @@
  */
 package com.clueride.sse.event.answer;
 
-import java.lang.invoke.MethodHandles;
-
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
-import org.glassfish.jersey.media.sse.EventOutput;
-import org.glassfish.jersey.media.sse.SseBroadcaster;
-import org.glassfish.jersey.media.sse.SseFeature;
-
-import com.clueride.sse.common.CommonChannelService;
-import com.clueride.sse.common.CommonChannelServiceImpl;
-import com.clueride.sse.common.ServerSentEventChannel;
-
 /**
- * REST API for subscribing to and broadcasting to the Puzzle Events.
+ * REST API for broadcasting AnswerSummary events for the Puzzles.
  */
 @Singleton
 @Path("answer-summary")
 public class AnswerSummaryWebService {
-    private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
-
     private AnswerSummaryService answerSummaryService = new AnswerSummaryServiceImpl();
-
-    private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
-
-    @GET
-    @Produces(SseFeature.SERVER_SENT_EVENTS)
-    @Path("{outingId}")
-    public EventOutput subscribeToOutingIdChannel(
-            @PathParam("outingId") Integer outingId,
-            @QueryParam("r") final String requestId
-    ) {
-        LOGGER.debug("Outing ID: " + outingId);
-
-        ServerSentEventChannel channel = commonChannelService.getEventChannel(
-                outingId
-        );
-        SseBroadcaster broadcaster = channel.getBroadcaster();
-
-        EventOutput eventOutput = new EventOutput();
-        broadcaster.add(eventOutput);
-        return eventOutput;
-    }
 
     @POST
     @Path("{outingId}")

@@ -54,6 +54,7 @@ public class ServerSentEventChannel {
                     @Override
                     public void run() {
                         broadcaster.broadcast(
+                                // TODO SSE-9 use EventBundler in place of this factory; dump the factory and interface
                                 keepAliveEventFactory.getKeepAliveEvent()
                         );
                     }
