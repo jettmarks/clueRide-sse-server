@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.clueride.sse.common.ServerSentEventChannel;
-import static java.lang.Thread.*;
+import static java.lang.Thread.sleep;
 
 /**
  * Implementation of TetherService.
@@ -37,11 +37,6 @@ public class TetherServiceImpl implements TetherService {
     private static Map<Integer, ServerSentEventChannel> channelMap = new HashMap<>();
 
     private static final TetherEventFactory TETHER_EVENT_FACTORY = new TetherEventFactory();
-
-    @Override
-    public ServerSentEventChannel openChannelResources(Integer outingId) {
-        return getEventChannel(outingId);
-    }
 
     private static Thread initTetherThread() {
         Thread thread = new Thread(
@@ -69,17 +64,8 @@ public class TetherServiceImpl implements TetherService {
     }
 
     @Override
-    public void releaseChannelResources(Integer outingId) {
-        try {
-            tetherRunnable.join();
-        } catch (InterruptedException e) {
-            // Eat the exception when we bring this down intentionally
-        }
-    }
-
-    @Override
-    public void broadcastTetherPosition(Integer outingId, LatLon latLon) {
-
+    public Integer broadcastTetherPosition(Integer outingId, LatLon latLon) {
+        return 0;
     }
 
     private ServerSentEventChannel getEventChannel(Integer outingId) {

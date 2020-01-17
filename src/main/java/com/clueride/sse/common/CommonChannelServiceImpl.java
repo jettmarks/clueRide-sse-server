@@ -20,6 +20,9 @@ package com.clueride.sse.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.glassfish.jersey.media.sse.EventOutput;
+import org.glassfish.jersey.media.sse.SseBroadcaster;
+
 /**
  * Implementation of {@link CommonChannelService}.
  *
@@ -44,7 +47,7 @@ public class CommonChannelServiceImpl implements CommonChannelService {
 
     @Override
     public ServerSentEventChannel getEventChannel(Integer outingId) {
-        // TODO: Change API to accept this from the client -- and update client too.
+        // TODO: SSE-7 Change API to accept this from the client -- and update client too.
         int userId = 47;
 
         CommonChannel channel = channelsPerOuting.get(outingId);
@@ -67,6 +70,33 @@ public class CommonChannelServiceImpl implements CommonChannelService {
     @Override
     public Map<Integer, CommonChannel> getChannelMap() {
         return channelsPerOuting;
+    }
+
+    @Override
+    public EventOutput getEventOutputForOuting(Integer outingId) {
+        ServerSentEventChannel channel = getEventChannel(outingId);
+        SseBroadcaster broadcaster = channel.getBroadcaster();
+        EventOutput eventOutput = new EventOutput();
+        broadcaster.add(eventOutput);
+        return eventOutput;
+    }
+
+    // TODO: SSE-17 badges per user.
+    @Override
+    public EventOutput getGenericEventOutput() {
+        ServerSentEventChannel channel = openChannelResources();
+        SseBroadcaster broadcaster = channel.getBroadcaster();
+        EventOutput eventOutput = new EventOutput();
+        broadcaster.add(eventOutput);
+        return eventOutput;
+    }
+
+    /* Not clear if we'll keep this, but maybe it will be useful. */
+    public void releaseChannelResources(Integer outingId) {
+        ServerSentEventChannel channel = getEventChannel(outingId);
+        SseBroadcaster broadcaster = channel.getBroadcaster();
+//        broadcaster.broadcast(eventBundler.getClosingMessage());
+        channel.getKeepAliveGenerator().release();
     }
 
 }

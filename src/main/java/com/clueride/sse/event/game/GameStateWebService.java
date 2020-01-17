@@ -19,20 +19,13 @@ package com.clueride.sse.event.game;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.media.sse.EventOutput;
-import org.glassfish.jersey.media.sse.SseBroadcaster;
-import org.glassfish.jersey.media.sse.SseFeature;
-
-import com.clueride.sse.common.ServerSentEventChannel;
 
 /**
  * REST API for broadcasting Game State changes to each of the clients
@@ -45,21 +38,14 @@ public class GameStateWebService {
 
     private GameStateService gameStateService = new GameStateServiceImpl();
 
-    @GET
-    @Produces(SseFeature.SERVER_SENT_EVENTS)
-    @Path("{outingId}")
-    public EventOutput subscribeToOutingIdChannel(
-            @PathParam("outingId") Integer outingId,
-            @QueryParam("r") final String requestId
-    ) {
-        LOGGER.debug("Outing ID: " + outingId + "  Request ID: " + requestId);
-        ServerSentEventChannel channel = gameStateService.openChannelResources(outingId);
-        SseBroadcaster broadcaster = channel.getBroadcaster();
-        EventOutput eventOutput = new EventOutput();
-        broadcaster.add(eventOutput);
-        return eventOutput;
-    }
-
+    /**
+     * Used by Game State Event generators to broadcast the event
+     * to all subscribers on the Outing ID channel.
+     *
+     * @param message JSON representation of the Game State event.
+     * @param outingId unique identifier for the channel assigned to the Outing.
+     * @return human-readable string result.
+     */
     @POST
     @Path("{outingId}")
     @Produces(MediaType.TEXT_PLAIN)
@@ -70,22 +56,6 @@ public class GameStateWebService {
     ) {
         gameStateService.broadcastMessage(outingId, message);
         return "Message '" + message + "' has been broadcast.";
-    }
-
-    /**
-     * Releases channel and its resources after notifying subscribers.
-     * @param outingId Unique identifier for the channel.
-     * @return the ID of the channel that has been closed.
-     */
-    @POST
-    @Path("close/{outingId}")
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.TEXT_PLAIN)
-    public Integer closeChannel(
-            @PathParam("outingId") Integer outingId
-    ) {
-        gameStateService.releaseChannelResources(outingId);
-        return outingId;
     }
 
 }

@@ -17,33 +17,17 @@
  */
 package com.clueride.sse.event.game;
 
-import com.clueride.sse.common.ServerSentEventChannel;
-
 /**
  * Defines operations on the Game State publish/subscribe service.
  */
 public interface GameStateService {
-    /**
-     * Channels are opened against an outing.
-     * @param outingId Unique identifier for the associated Outing.
-     * @return ServerSentEventChannel holding the EventOutput to be used.
-     */
-    ServerSentEventChannel openChannelResources(Integer outingId);
-
-    /**
-     * When no more broadcast messages will be sent, this releases the resources.
-     *
-     * Note that the client Web Service is expected to send out close messages to
-     * the subscribers. This only shuts down the resources.
-     * @param outingId Unique identifier for the associated Outing.
-     */
-    void releaseChannelResources(Integer outingId);
 
     /**
      * Sends the message to the matching outingId's channel.
+     *
      * @param outingId Unique identifier for the Outing.
-     * @param message String to be sent to all subscribers of this Outing.
+     * @param gameStateEventAsJSON JSON representation of the Game State.
      */
-    void broadcastMessage(Integer outingId, String message);
+    void broadcastMessage(Integer outingId, String gameStateEventAsJSON);
 
 }
