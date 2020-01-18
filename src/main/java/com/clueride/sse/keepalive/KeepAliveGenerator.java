@@ -49,8 +49,8 @@ public class KeepAliveGenerator {
                 state = State.RUNNING;
                 while (state == State.RUNNING) {
                     try {
-                        TimeUnit.SECONDS.sleep(maxInactivePeriodInSeconds);
                         action.run();
+                        TimeUnit.SECONDS.sleep(maxInactivePeriodInSeconds);
                     } catch (InterruptedException e) {
                         switch (state) {
                             case RUNNING:
