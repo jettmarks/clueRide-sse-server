@@ -19,19 +19,10 @@ package com.clueride.sse.common;
 
 import java.util.Map;
 
-import org.glassfish.jersey.media.sse.EventOutput;
-
 /**
  * Defines common operations on Channels.
  */
 public interface CommonChannelService {
-    /**
-     * Open a generic channel that is non-specific to an outing.
-     *
-     * @return instance of {@link ServerSentEventChannel} for communication without
-     * knowledge of a specific Outing.
-     */
-    ServerSentEventChannel openChannelResources();
 
     /**
      * Retrieve a previously opened Event Channel for the given Outing and Puzzle.
@@ -40,29 +31,27 @@ public interface CommonChannelService {
      * @return instance of {@link ServerSentEventChannel} for events specific
      * to the Outing and the Puzzle.
      */
-    ServerSentEventChannel getEventChannel(Integer outingId);
+    ServerSentEventChannel getOutingChannel(Integer outingId);
+
+    /**
+     * Retrieve a previously opened Event Channel for the given User.
+     *
+     * @param badgeOsId unique identifier for a potential badge recipient.
+     * @return Channel for broadcasting to a specific user.
+     */
+    ServerSentEventChannel getUserChannel(Integer badgeOsId);
 
     /**
      * Returns the map of Channels per Outing ID.
      * @return Map of ServerSentEventChannel per Integer outingId.
      */
-    Map<Integer, CommonChannel> getChannelMap();
+    Map<Integer, CommonChannel> getOutingChannelMap();
+
 
     /**
-     * Given an Outing ID, return an instance of EventOutput which holds and open
-     * session against the Outing's channel.
-     *
-     * @param outingId unique identifier for the Outing and its corresponding Channel.
-     * @return instance of EventOutput suitable for returning to the client to hold session open.
+     * Returns the map of Channels per User ID.
+     * @return Map of ServerSentEventChannel per Integer badgeOsId.
      */
-    EventOutput getEventOutputForOuting(Integer outingId);
-
-    /**
-     * Return an instance of what?
-     *
-     * TODO: SSE-17 Turn this into the one that listens for Badges against a User ID.
-     * @return crap.
-     */
-    EventOutput getGenericEventOutput();
+    Map<Integer, CommonChannel> getUserChannelMap();
 
 }
