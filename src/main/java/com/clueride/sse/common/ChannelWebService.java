@@ -32,6 +32,9 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseFeature;
 
+import com.clueride.sse.eventoutput.EventOutputService;
+import com.clueride.sse.eventoutput.EventOutputServiceImpl;
+
 /**
  * Accepts requests to subscribe to SSE Events both
  * with or without an Outing ID.
@@ -42,23 +45,25 @@ public class ChannelWebService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
+    private EventOutputService eventOutputService = new EventOutputServiceImpl();
 
     /**
      * Request subscription to SSE Events outside of a specific Outing.
      *
-     * This is typically used by Ranger to listen for Badge Events.
-     * TODO: SSE-17 Isn't this per user regardless of Outing?
+     * This is typically used by clients that only need Open/Close or Badge Events.
      *
      * @param requestId unique identifier for the request, suitable for retries.
      * @return EventOutput instance that holds open the session.
      */
     @GET
     @Produces(SseFeature.SERVER_SENT_EVENTS)
+    @Path("{badgeOsId}")
     public EventOutput subscribeToGenericChannel(
-           @QueryParam("r") final String requestId
+            @PathParam("badgeOsId") Integer badgeOsId,
+            @QueryParam("r") final String requestId
     ) {
-        LOGGER.debug("Generic SSE Channel request: " + requestId);
-        return commonChannelService.getGenericEventOutput();
+        LOGGER.debug("Generic SSE Channel request: " + requestId + " for " + badgeOsId);
+        return eventOutputService.getEventOutputForUser(badgeOsId);
     }
 
     /**
@@ -71,24 +76,26 @@ public class ChannelWebService {
      */
     @GET
     @Produces(SseFeature.SERVER_SENT_EVENTS)
-    @Path("{outingId}")
+    @Path("{badgeOsId}/{outingId}")
     public EventOutput subscribeToOutingIdChannel(
+            @PathParam("badgeOsId") Integer badgeOsId,
             @PathParam("outingId") Integer outingId,
             @QueryParam("r") final String requestId
     ) {
         LOGGER.debug(
+                "BadgeOS ID " + badgeOsId +
                 "Outing ID " + outingId +
                 " SSE Channel request " + requestId
         );
-        return commonChannelService.getEventOutputForOuting(outingId);
+        return eventOutputService.getEventOutputForOuting(badgeOsId, outingId);
     }
 
     // TODO: This looks like one of the calls for SSE-7
     @GET
     @Path("map")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Integer, CommonChannel> getChannelMap() {
-        return commonChannelService.getChannelMap();
+    public Map<Integer, CommonChannel> getUserChannelMap() {
+        return commonChannelService.getUserChannelMap();
     }
 
 }

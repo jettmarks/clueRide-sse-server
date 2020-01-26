@@ -49,7 +49,7 @@ public class AnswerSummaryServiceImpl implements AnswerSummaryService {
                 )
         );
 
-        ServerSentEventChannel channel = commonChannelService.getEventChannel(
+        ServerSentEventChannel channel = commonChannelService.getOutingChannel(
                 outingId
         );
 

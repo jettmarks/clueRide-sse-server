@@ -49,7 +49,7 @@ public class BadgeAwardServiceImpl implements BadgeAwardService {
                 )
         );
 
-        ServerSentEventChannel channel = commonChannelService.getEventChannel(
+        ServerSentEventChannel channel = commonChannelService.getOutingChannel(
                 outingId
         );
 

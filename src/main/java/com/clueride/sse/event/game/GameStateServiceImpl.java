@@ -44,7 +44,7 @@ public class GameStateServiceImpl implements GameStateService {
                         gameStateEventAsJSON
                 )
         );
-        ServerSentEventChannel channel = commonChannelService.getEventChannel(outingId);
+        ServerSentEventChannel channel = commonChannelService.getOutingChannel(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
         broadcaster.broadcast(eventBundler.bundleMessage(gameStateEventAsJSON, EventType.GAME_STATE));
         channel.getKeepAliveGenerator().reset();
