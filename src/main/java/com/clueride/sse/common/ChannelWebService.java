@@ -18,7 +18,7 @@
 package com.clueride.sse.common;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -44,7 +44,6 @@ import com.clueride.sse.eventoutput.EventOutputServiceImpl;
 public class ChannelWebService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
-    private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
     private EventOutputService eventOutputService = new EventOutputServiceImpl();
 
     /**
@@ -94,8 +93,9 @@ public class ChannelWebService {
     @GET
     @Path("map")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Integer, CommonChannel> getUserChannelMap() {
-        return commonChannelService.getUserChannelMap();
+    public Set<Integer> getUserChannelMap(
+    ) {
+        return eventOutputService.getSubscribingUserIds();
     }
 
 }

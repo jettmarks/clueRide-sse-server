@@ -19,13 +19,12 @@ package com.clueride.sse.eventoutput;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.glassfish.jersey.media.sse.EventOutput;
-import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 import com.clueride.sse.common.CommonChannelService;
 import com.clueride.sse.common.CommonChannelServiceImpl;
-import com.clueride.sse.common.ServerSentEventChannel;
 
 /**
  * Default implementation of {@link EventOutputService}.
@@ -42,24 +41,24 @@ public class EventOutputServiceImpl implements EventOutputService {
         if (eventOutput == null) {
             eventOutput = new EventOutput();
             eventOutputPerUser.put(badgeOsId, eventOutput);
+            channelService.addUserEventOutput(badgeOsId, eventOutput);
         }
-
-        ServerSentEventChannel userChannel = channelService.getUserChannel(badgeOsId);
-        SseBroadcaster userBroadcaster = userChannel.getBroadcaster();
-        userBroadcaster.add(eventOutput);
-
         return eventOutput;
     }
 
     @Override
     public EventOutput getEventOutputForOuting(Integer badgeOsId, Integer outingId) {
         EventOutput eventOutput = getEventOutputForUser(badgeOsId);
-
-        ServerSentEventChannel outingChannel = channelService.getOutingChannel(outingId);
-        SseBroadcaster outingBroadcaster = outingChannel.getBroadcaster();
-        outingBroadcaster.add(eventOutput);
-
+        channelService.addOutingEventOutput(
+                badgeOsId,
+                outingId,
+                eventOutput
+        );
         return eventOutput;
+    }
+
+    public Set<Integer> getSubscribingUserIds() {
+        return eventOutputPerUser.keySet();
     }
 
 }

@@ -17,74 +17,75 @@
  */
 package com.clueride.sse.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 /**
  * Implementation of {@link CommonChannelService}.
  *
- * TODO: The Map of channels opened would serve as a good way to implement SSE-7.
  */
 public class CommonChannelServiceImpl implements CommonChannelService {
 
-    /* The single channel used when there is no outing. */
-    private static ServerSentEventChannel noOutingEventChannel = null;
-    private static final Integer NO_OUTING = -1;
-
-    /* Map of the channel for each Outing. */
-    private static final Map<Integer,CommonChannel> channelsPerOuting = new HashMap<>();
     /* Map of the channel for each User. */
-    private static final Map<Integer,CommonChannel> channelPerUser = new HashMap<>();
+    private static final Map<Integer,ServerSentEventChannel> channelPerUser = new HashMap<>();
+    /* Map of the channel for each Outing. */
+    private static final Map<Integer, ServerSentEventChannel> channelPerOuting = new HashMap<>();
+    /* Map of the users for each Outing. */
+    private static final Map<Integer, List<Integer>> usersPerOuting = new HashMap<>();
+
+    @Override
+    public Map<Integer, ServerSentEventChannel> getOutingChannelMap() {
+        return channelPerOuting;
+    }
 
     @Override
     public ServerSentEventChannel getOutingChannel(Integer outingId) {
-        // TODO: SSE-19: Are we going to need CommonChannel?
-        CommonChannel channel = channelsPerOuting.get(outingId);
+        return channelPerOuting.get(outingId);
+    }
 
-        if (!channelsPerOuting.containsKey(outingId)) {
-            channel = new CommonChannel(
-                    new ServerSentEventChannel(outingId),
-                    outingId
-            );
+    @Override
+    public void addUserEventOutput(Integer badgeOsId, EventOutput eventOutput) {
 
-            channelsPerOuting.put(
-                    outingId,
-                    channel
-            );
+        if (channelPerUser.containsKey(badgeOsId)) {
+            /* We already have a channel for this user; nothing to be done. */
+            return;
         }
-        return channelsPerOuting.get(outingId).getServerSentEventChannel();
+
+        /* Create a channel for the user and add the output to its broadcaster. */
+        ServerSentEventChannel serverSentEventChannel = new ServerSentEventChannel();
+        channelPerUser.put(badgeOsId, serverSentEventChannel);
+        serverSentEventChannel.getBroadcaster().add(eventOutput);
     }
 
     @Override
-    public ServerSentEventChannel getUserChannel(Integer badgeOsId) {
-        CommonChannel channel = channelPerUser.get(badgeOsId);
-
-        if (!channelPerUser.containsKey(badgeOsId)) {
-            channel = new CommonChannel(
-                    new ServerSentEventChannel(NO_OUTING),
-                    NO_OUTING
-            );
-
-            channelPerUser.put(badgeOsId, channel);
+    public void addOutingEventOutput(Integer badgeOsId, Integer outingId, EventOutput eventOutput) {
+        /* First, check if this outing has been requested before. */
+        if (usersPerOuting.containsKey(outingId)) {
+            if (usersPerOuting.get(outingId).contains(badgeOsId)) {
+                /* We've already handled this user for this outing; nothing to do. */
+                return;
+            } else {
+                usersPerOuting.get(outingId).add(badgeOsId);
+                channelPerOuting.get(outingId).getBroadcaster().add(eventOutput);
+            }
+        } else {
+            /* Need to create new Channel for this outing. */
+            ServerSentEventChannel channel = new ServerSentEventChannel(outingId);
+            channelPerOuting.put(outingId, channel);
+            channelPerOuting.get(outingId).getBroadcaster().add(eventOutput);
+            usersPerOuting.put(outingId, new ArrayList<Integer>());
+            usersPerOuting.get(outingId).add(badgeOsId);
         }
-        return channelPerUser.get(badgeOsId).getServerSentEventChannel();
-    }
-
-    @Override
-    public Map<Integer, CommonChannel> getOutingChannelMap() {
-        return channelsPerOuting;
-    }
-
-    @Override
-    public Map<Integer, CommonChannel> getUserChannelMap() {
-        return channelPerUser;
     }
 
     /* Not clear if we'll keep this, but maybe it will be useful. */
     public void releaseChannelResources(Integer outingId) {
-        ServerSentEventChannel channel = getOutingChannel(outingId);
+        ServerSentEventChannel channel = channelPerOuting.get(outingId);
         SseBroadcaster broadcaster = channel.getBroadcaster();
 //        broadcaster.broadcast(eventBundler.getClosingMessage());
         channel.getKeepAliveGenerator().release();
