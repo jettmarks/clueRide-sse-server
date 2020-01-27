@@ -17,6 +17,8 @@
  */
 package com.clueride.sse.eventoutput;
 
+import java.util.Set;
+
 import org.glassfish.jersey.media.sse.EventOutput;
 
 /**
@@ -45,5 +47,8 @@ public interface EventOutputService {
      * @return instance of EventOutput suitable for returning to the client to hold session open.
      */
     EventOutput getEventOutputForOuting(Integer badgeOsId, Integer outingId);
+
+    // TODO: SSE-7
+    Set<Integer> getSubscribingUserIds();
 
 }

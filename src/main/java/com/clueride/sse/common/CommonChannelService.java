@@ -19,39 +19,50 @@ package com.clueride.sse.common;
 
 import java.util.Map;
 
+import org.glassfish.jersey.media.sse.EventOutput;
+
 /**
  * Defines common operations on Channels.
  */
 public interface CommonChannelService {
 
     /**
-     * Retrieve a previously opened Event Channel for the given Outing and Puzzle.
+     * Retrieves the channel setup for a given Outing.
      *
-     * @param outingId unique identifier for the outing.
-     * @return instance of {@link ServerSentEventChannel} for events specific
-     * to the Outing and the Puzzle.
+     * There should only be one of these per outing and all
+     * listeners for that outing will add their EventOutput
+     * to that channel's broadcaster.
+     *
+     * @param outingId unique identifier for the Outing.
+     * @return ServerSentEventChannel for the outing.
      */
     ServerSentEventChannel getOutingChannel(Integer outingId);
 
     /**
-     * Retrieve a previously opened Event Channel for the given User.
+     * Adds the EventOutput instance to the User-specific broadcaster.
      *
-     * @param badgeOsId unique identifier for a potential badge recipient.
-     * @return Channel for broadcasting to a specific user.
+     * @param badgeOsId unique identifier for the User.
+     * @param eventOutput the EventOutput instance the user's session will use.
      */
-    ServerSentEventChannel getUserChannel(Integer badgeOsId);
+    void addUserEventOutput(Integer badgeOsId, EventOutput eventOutput);
 
     /**
-     * Returns the map of Channels per Outing ID.
+     * Adds the EventOutput to the Outing-specific channel.
+     *
+     * @param badgeOsId unique identifier for the User.
+     * @param outingId unique identifier for the Outing.
+     * @param eventOutput the EventOutput instance the user's session will use.
+     */
+    void addOutingEventOutput(
+            Integer badgeOsId,
+            Integer outingId,
+            EventOutput eventOutput
+    );
+
+    /**
+     * TODO: SSE-7
+     * Returns the map of Channel per Outing ID.
      * @return Map of ServerSentEventChannel per Integer outingId.
      */
-    Map<Integer, CommonChannel> getOutingChannelMap();
-
-
-    /**
-     * Returns the map of Channels per User ID.
-     * @return Map of ServerSentEventChannel per Integer badgeOsId.
-     */
-    Map<Integer, CommonChannel> getUserChannelMap();
-
+    Map<Integer, ServerSentEventChannel> getOutingChannelMap();
 }
