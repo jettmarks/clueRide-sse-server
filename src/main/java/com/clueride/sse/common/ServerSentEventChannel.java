@@ -23,12 +23,7 @@ import com.clueride.sse.keepalive.KeepAliveEventFactory;
 import com.clueride.sse.keepalive.KeepAliveGenerator;
 
 /**
- * Support for pushing an event to all members of a group.
- *
- * Responsible for the life-cycle of the EventOutput object used
- * for a given group as well as the thread which provides timing.
- *
- * Collaborates with the WebService providing the ServerSentEvent endpoint.
+ * Support for keeping an open session by providing the KeepAlive thread alive.
  */
 public class ServerSentEventChannel {
     private final SseBroadcaster broadcaster = new SseBroadcaster();
@@ -38,17 +33,20 @@ public class ServerSentEventChannel {
     /* This is chosen to be a bit under the 45-second interval that the client uses for checking up on us. */
     private final static int KEEP_ALIVE_INTERVAL = 35;
 
-    /** Empty default constructor for JAXB. */
     public ServerSentEventChannel() {
         this.outingId = -1;
-        keepAliveGenerator = null;
+        keepAliveGenerator = provideKeepAliveGenerator();
     }
 
     public ServerSentEventChannel(
             Integer outingId
     ) {
         this.outingId = outingId;
-        keepAliveGenerator = new KeepAliveGenerator(KEEP_ALIVE_INTERVAL);
+        keepAliveGenerator = provideKeepAliveGenerator();
+    }
+
+    private KeepAliveGenerator provideKeepAliveGenerator() {
+        KeepAliveGenerator keepAliveGenerator = new KeepAliveGenerator(KEEP_ALIVE_INTERVAL);
         keepAliveGenerator.setAction(
                 new Runnable() {
                     @Override
@@ -61,6 +59,7 @@ public class ServerSentEventChannel {
                 }
         );
         keepAliveGenerator.start();
+        return keepAliveGenerator;
     }
 
     public Integer getOutingId() {
