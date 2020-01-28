@@ -17,6 +17,9 @@
  */
 package com.clueride.sse.common;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 import com.clueride.sse.keepalive.KeepAliveEventFactory;
@@ -29,6 +32,7 @@ public class ServerSentEventChannel {
     private final SseBroadcaster broadcaster = new SseBroadcaster();
     private final Integer outingId;
     private final KeepAliveGenerator keepAliveGenerator;
+    private final Date creationTimestamp = new Date();
     private final static EventFactory keepAliveEventFactory = new KeepAliveEventFactory();
     /* This is chosen to be a bit under the 45-second interval that the client uses for checking up on us. */
     private final static int KEEP_ALIVE_INTERVAL = 35;
@@ -72,6 +76,18 @@ public class ServerSentEventChannel {
 
     public KeepAliveGenerator getKeepAliveGenerator() {
         return this.keepAliveGenerator;
+    }
+
+    public Date getCreationTimestamp() {
+        return creationTimestamp;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("outingId", outingId)
+                .append("creationTimestamp", creationTimestamp)
+                .toString();
     }
 
 }
