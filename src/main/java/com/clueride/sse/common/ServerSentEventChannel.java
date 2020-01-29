@@ -17,25 +17,33 @@
  */
 package com.clueride.sse.common;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
+import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
-import com.clueride.sse.keepalive.KeepAliveEventFactory;
 import com.clueride.sse.keepalive.KeepAliveGenerator;
 
 /**
  * Support for keeping an open session by providing the KeepAlive thread alive.
  */
 public class ServerSentEventChannel {
+    private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
+
     private final SseBroadcaster broadcaster = new SseBroadcaster();
     private final Integer outingId;
     private final KeepAliveGenerator keepAliveGenerator;
     private final Date creationTimestamp = new Date();
-    private final static EventFactory keepAliveEventFactory = new KeepAliveEventFactory();
     /* This is chosen to be a bit under the 45-second interval that the client uses for checking up on us. */
     private final static int KEEP_ALIVE_INTERVAL = 35;
+    private final EventBundler eventBundler = new EventBundler();
+    private Integer userId;
+
+    /* For diagnostics only. */
+    private EventOutput eventOutput;
 
     public ServerSentEventChannel() {
         this.outingId = -1;
@@ -49,16 +57,26 @@ public class ServerSentEventChannel {
         keepAliveGenerator = provideKeepAliveGenerator();
     }
 
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public void setEventOutput(EventOutput eventOutput) {
+        this.eventOutput = eventOutput;
+    }
+
     private KeepAliveGenerator provideKeepAliveGenerator() {
+        LOGGER.debug("New Keep Alive generated " + creationTimestamp);
         KeepAliveGenerator keepAliveGenerator = new KeepAliveGenerator(KEEP_ALIVE_INTERVAL);
         keepAliveGenerator.setAction(
                 new Runnable() {
                     @Override
                     public void run() {
                         broadcaster.broadcast(
-                                // TODO SSE-9 use EventBundler in place of this factory; dump the factory and interface
-                                keepAliveEventFactory.getKeepAliveEvent()
+                                eventBundler.getKeepAliveMessage()
                         );
+                        LOGGER.debug("User ID: " + userId);
+
                     }
                 }
         );
@@ -86,6 +104,7 @@ public class ServerSentEventChannel {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("outingId", outingId)
+                .append("userId", userId)
                 .append("creationTimestamp", creationTimestamp)
                 .toString();
     }

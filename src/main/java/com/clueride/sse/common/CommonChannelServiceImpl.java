@@ -58,6 +58,8 @@ public class CommonChannelServiceImpl implements CommonChannelService {
 
         /* Create a channel for the user and add the output to its broadcaster. */
         ServerSentEventChannel serverSentEventChannel = new ServerSentEventChannel();
+        serverSentEventChannel.setUserId(badgeOsId);
+        serverSentEventChannel.setEventOutput(eventOutput);
         channelPerUser.put(badgeOsId, serverSentEventChannel);
         serverSentEventChannel.getBroadcaster().add(eventOutput);
     }

@@ -40,6 +40,14 @@ public class EventBundler {
         return bundleMessage(message, "message");
     }
 
+    public OutboundEvent getKeepAliveMessage() {
+        final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
+        eventBuilder.name("message");
+        eventBuilder.id("" + generateMessageId());
+        eventBuilder.comment("Keep Alive");
+        return eventBuilder.build();
+    }
+
     /**
      * Wraps a message string (generally JSON represention of an event), with the SSE stuff required to broadcast the
      * message of the given Event Type.
