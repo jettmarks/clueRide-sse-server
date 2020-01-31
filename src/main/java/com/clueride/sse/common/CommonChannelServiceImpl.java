@@ -49,6 +49,11 @@ public class CommonChannelServiceImpl implements CommonChannelService {
     }
 
     @Override
+    public ServerSentEventChannel getUserChannel(Integer userId) {
+        return channelPerUser.get(userId);
+    }
+
+    @Override
     public void addUserEventOutput(Integer badgeOsId, EventOutput eventOutput) {
 
         if (channelPerUser.containsKey(badgeOsId)) {
@@ -78,6 +83,7 @@ public class CommonChannelServiceImpl implements CommonChannelService {
         } else {
             /* Need to create new Channel for this outing. */
             ServerSentEventChannel channel = new ServerSentEventChannel(outingId);
+            channel.setOutingId(outingId);
             channelPerOuting.put(outingId, channel);
             channelPerOuting.get(outingId).getBroadcaster().add(eventOutput);
             usersPerOuting.put(outingId, new ArrayList<Integer>());
