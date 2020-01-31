@@ -38,6 +38,19 @@ public interface CommonChannelService {
      */
     ServerSentEventChannel getOutingChannel(Integer outingId);
 
+
+    /**
+     * Retrieves the channel setup for a given User.
+     *
+     * There is a channel per user for broadcasting messages specific
+     * to this user. The user's EventOutput will be listed added to
+     * the channel.
+     *
+     * @param userId unique identifier for the user -- typically their BadgeOS ID.
+     * @return ServerSentEventChannel for the user.
+     */
+    ServerSentEventChannel getUserChannel(Integer userId);
+
     /**
      * Adds the EventOutput instance to the User-specific broadcaster.
      *
