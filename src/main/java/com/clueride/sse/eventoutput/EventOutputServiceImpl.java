@@ -23,38 +23,38 @@ import java.util.Set;
 
 import org.glassfish.jersey.media.sse.EventOutput;
 
-import com.clueride.sse.common.CommonChannelService;
-import com.clueride.sse.common.CommonChannelServiceImpl;
+import com.clueride.sse.channel.OutingChannelService;
+import com.clueride.sse.channel.OutingChannelServiceImpl;
+import com.clueride.sse.channel.UserChannel;
+import com.clueride.sse.channel.UserChannelService;
+import com.clueride.sse.channel.UserChannelServiceImpl;
 
 /**
  * Default implementation of {@link EventOutputService}.
  */
 public class EventOutputServiceImpl implements EventOutputService {
-
-    private CommonChannelService channelService = new CommonChannelServiceImpl();
+    private UserChannelService userChannelService = new UserChannelServiceImpl();
+    private OutingChannelService outingChannelService = new OutingChannelServiceImpl();
 
     private static Map<Integer, EventOutput> eventOutputPerUser = new HashMap<>();
 
     @Override
-    public EventOutput getEventOutputForUser(Integer badgeOsId) {
-        EventOutput eventOutput = eventOutputPerUser.get(badgeOsId);
-        if (eventOutput == null) {
-            eventOutput = new EventOutput();
-            eventOutputPerUser.put(badgeOsId, eventOutput);
-            channelService.addUserEventOutput(badgeOsId, eventOutput);
-        }
-        return eventOutput;
+    public EventOutput getEventOutputForUser(Integer badgeOsId, String requestId) {
+        return userChannelService.getUserChannel(badgeOsId, requestId).getEventOutput();
     }
 
     @Override
-    public EventOutput getEventOutputForOuting(Integer badgeOsId, Integer outingId) {
-        EventOutput eventOutput = getEventOutputForUser(badgeOsId);
-        channelService.addOutingEventOutput(
-                badgeOsId,
-                outingId,
-                eventOutput
+    public EventOutput getEventOutputForOuting(
+            Integer badgeOsId,
+            Integer outingId,
+            String requestId
+    ) {
+        UserChannel userChannel = userChannelService.getUserChannel(
+               badgeOsId,
+               requestId
         );
-        return eventOutput;
+        outingChannelService.addUserChannelToOuting(userChannel, outingId);
+        return userChannel.getEventOutput();
     }
 
     public Set<Integer> getSubscribingUserIds() {

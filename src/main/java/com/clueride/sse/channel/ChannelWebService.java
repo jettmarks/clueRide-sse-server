@@ -15,7 +15,7 @@
  *
  * Created by jett on 3/6/19.
  */
-package com.clueride.sse.common;
+package com.clueride.sse.channel;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
@@ -62,7 +62,7 @@ public class ChannelWebService {
             @QueryParam("r") final String requestId
     ) {
         LOGGER.debug("Generic SSE Channel request: " + requestId + " for " + badgeOsId);
-        return eventOutputService.getEventOutputForUser(badgeOsId);
+        return eventOutputService.getEventOutputForUser(badgeOsId, requestId);
     }
 
     /**
@@ -83,10 +83,14 @@ public class ChannelWebService {
     ) {
         LOGGER.debug(
                 "BadgeOS ID " + badgeOsId +
-                "Outing ID " + outingId +
+                " Outing ID " + outingId +
                 " SSE Channel request " + requestId
         );
-        return eventOutputService.getEventOutputForOuting(badgeOsId, outingId);
+        return eventOutputService.getEventOutputForOuting(
+                badgeOsId,
+                outingId,
+                requestId
+        );
     }
 
     // TODO: This looks like one of the calls for SSE-7

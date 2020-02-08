@@ -21,11 +21,11 @@ import java.lang.invoke.MethodHandles;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.OutboundEvent;
+import org.glassfish.jersey.media.sse.SseBroadcaster;
 
-import com.clueride.sse.common.CommonChannelService;
-import com.clueride.sse.common.CommonChannelServiceImpl;
-import com.clueride.sse.common.EventBundler;
-import com.clueride.sse.common.ServerSentEventChannel;
+import com.clueride.sse.channel.OutingChannelService;
+import com.clueride.sse.channel.OutingChannelServiceImpl;
+import com.clueride.sse.event.EventBundler;
 import com.clueride.sse.event.EventType;
 
 /**
@@ -34,7 +34,7 @@ import com.clueride.sse.event.EventType;
 public class AnswerSummaryServiceImpl implements AnswerSummaryService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
-    private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
+    private OutingChannelService outingChannelService = new OutingChannelServiceImpl();
     private EventBundler eventBundler = new EventBundler();
 
     @Override
@@ -49,14 +49,10 @@ public class AnswerSummaryServiceImpl implements AnswerSummaryService {
                 )
         );
 
-        ServerSentEventChannel channel = commonChannelService.getOutingChannel(
-                outingId
-        );
 
+        SseBroadcaster broadcaster = outingChannelService.getOutingBroadcaster(outingId);
         OutboundEvent event = eventBundler.bundleMessage(message, EventType.ANSWER_SUMMARY);
-        channel.getBroadcaster().broadcast(event);
-
-        channel.getKeepAliveGenerator().reset();
+        broadcaster.broadcast(event);
 
         return event.getId();
     }

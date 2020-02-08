@@ -34,7 +34,7 @@ public interface EventOutputService {
      * @param badgeOsId Unique identifier for the user's Badge Account.
      * @return EventOutput object that holds open the session and broadcasts appropriate events.
      */
-    EventOutput getEventOutputForUser(Integer badgeOsId);
+    EventOutput getEventOutputForUser(Integer badgeOsId, String requestId);
 
     /**
      * Given an Outing ID, return an instance of EventOutput which holds and open
@@ -46,7 +46,11 @@ public interface EventOutputService {
      * @param outingId unique identifier for the Outing and its corresponding Channel.
      * @return instance of EventOutput suitable for returning to the client to hold session open.
      */
-    EventOutput getEventOutputForOuting(Integer badgeOsId, Integer outingId);
+    EventOutput getEventOutputForOuting(
+            Integer badgeOsId,
+            Integer outingId,
+            String requestid
+    );
 
     // TODO: SSE-7
     Set<Integer> getSubscribingUserIds();

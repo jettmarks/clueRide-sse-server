@@ -15,11 +15,9 @@
  *
  * Created by jett on 2/24/19.
  */
-package com.clueride.sse.common;
+package com.clueride.sse.event;
 
 import org.glassfish.jersey.media.sse.OutboundEvent;
-
-import com.clueride.sse.event.EventType;
 
 /**
  * Common method for bundling up an event.

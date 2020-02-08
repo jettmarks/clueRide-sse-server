@@ -18,72 +18,19 @@
 package com.clueride.sse.event.tether;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
-
-import com.clueride.sse.common.ServerSentEventChannel;
-import static java.lang.Thread.sleep;
 
 /**
  * Implementation of TetherService.
  */
 public class TetherServiceImpl implements TetherService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
-    private static final Integer BROADCAST_ALL = -1;
-    private static Thread tetherRunnable = initTetherThread();
-
-    private static Map<Integer, ServerSentEventChannel> channelMap = new HashMap<>();
-
-    private static final TetherEventFactory TETHER_EVENT_FACTORY = new TetherEventFactory();
-
-    private static Thread initTetherThread() {
-        Thread thread = new Thread(
-            new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        for (ServerSentEventChannel channel : channelMap.values()) {
-                            LOGGER.debug("Sending Tether to Outing " + channel.getOutingId());
-                            channel.getBroadcaster().broadcast(
-                                    TETHER_EVENT_FACTORY.getHeartbeatEvent()
-                            );
-                        }
-                        try {
-                            sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        );
-        thread.start();
-        return thread;
-    }
 
     @Override
     public Integer broadcastTetherPosition(Integer outingId, LatLon latLon) {
+        LOGGER.debug("Not yet implemented");
         return 0;
-    }
-
-    private ServerSentEventChannel getEventChannel(Integer outingId) {
-        ServerSentEventChannel channel;
-        /* Lazy init of the BROADCAST_ALL channel. */
-        if (outingId == null) {
-            outingId = BROADCAST_ALL;
-        }
-
-        if (channelMap.containsKey(outingId)) {
-            channel = channelMap.get(outingId);
-        } else {
-            channel = new ServerSentEventChannel(
-                    outingId
-            );
-            channelMap.put(outingId, channel);
-        }
-        return channel;
     }
 
 }

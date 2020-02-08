@@ -20,10 +20,9 @@ package com.clueride.sse.event.game;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
-import com.clueride.sse.common.CommonChannelService;
-import com.clueride.sse.common.CommonChannelServiceImpl;
-import com.clueride.sse.common.EventBundler;
-import com.clueride.sse.common.ServerSentEventChannel;
+import com.clueride.sse.channel.OutingChannelService;
+import com.clueride.sse.channel.OutingChannelServiceImpl;
+import com.clueride.sse.event.EventBundler;
 import com.clueride.sse.event.EventType;
 
 /**
@@ -32,7 +31,7 @@ import com.clueride.sse.event.EventType;
 public class GameStateServiceImpl implements GameStateService {
     private static final Logger LOGGER = Logger.getLogger(GameStateServiceImpl.class);
 
-    private CommonChannelService commonChannelService = new CommonChannelServiceImpl();
+    private OutingChannelService outingChannelService = new OutingChannelServiceImpl();
     private EventBundler eventBundler = new EventBundler();
 
     @Override
@@ -44,10 +43,9 @@ public class GameStateServiceImpl implements GameStateService {
                         gameStateEventAsJSON
                 )
         );
-        ServerSentEventChannel channel = commonChannelService.getOutingChannel(outingId);
-        SseBroadcaster broadcaster = channel.getBroadcaster();
+
+        SseBroadcaster broadcaster = outingChannelService.getOutingBroadcaster(outingId);
         broadcaster.broadcast(eventBundler.bundleMessage(gameStateEventAsJSON, EventType.GAME_STATE));
-        channel.getKeepAliveGenerator().reset();
     }
 
 }
