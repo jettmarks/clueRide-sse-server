@@ -17,16 +17,22 @@
  */
 package com.clueride.sse.channel;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
+import org.glassfish.jersey.server.Broadcaster;
 
 /**
  * Default implementation of {@link OutingChannelService}.
  */
 public class OutingChannelServiceImpl implements OutingChannelService {
+    private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     private static Map<Integer, OutingChannel> outingChannelById = new HashMap<>();
     private static Map<Integer, UserChannel> userChannelById = new HashMap<>();
@@ -65,6 +71,9 @@ public class OutingChannelServiceImpl implements OutingChannelService {
 
         /* Add the EventOutput to the OutingChannel's broadcaster. */
         broadcaster.add(userChannel.getEventOutput());
+
+        Integer userChannelCount = getChunkedOutputsSize(broadcaster);
+        LOGGER.debug("After adding, Outing Channel has this many ChunkedOutputs: " + userChannelCount);
     }
 
     @Override
@@ -77,12 +86,33 @@ public class OutingChannelServiceImpl implements OutingChannelService {
         SseBroadcaster broadcaster = getOutingBroadcaster(outingId);
 
         if (userChannelById.containsKey(userId)) {
+            LOGGER.debug("Dropping user channel for " + userChannel.getRequestId());
             EventOutput oldEventOutput = userChannelById.get(userId).getEventOutput();
             broadcaster.remove(oldEventOutput);
             userChannelById.remove(userId);
             outingIdByUserId.remove(userId);
+        } else {
+            LOGGER.debug("User Channel not recorded against any outings");
         }
 
+        Integer userChannelCount = getChunkedOutputsSize(broadcaster);
+        LOGGER.debug("After removal, Outing Channel has this many ChunkedOutputs: " + userChannelCount);
+    }
+
+    /**
+     * Uses reflection to read the private value of the `chunkedOutputs` field.
+     * @param sseBroadcaster Broadcaster that holds zero or more ChunkedOutputs.
+     */
+    private Integer getChunkedOutputsSize(SseBroadcaster sseBroadcaster) {
+        Integer count = null;
+        try {
+            Field field = Broadcaster.class.getDeclaredField("chunkedOutputs");
+            field.setAccessible(true);
+            count = ((ConcurrentLinkedQueue)field.get(sseBroadcaster)).size();
+        } catch(Exception e) {
+            LOGGER.error("Wasn't expecting this", e);
+        }
+        return count;
     }
 
 }

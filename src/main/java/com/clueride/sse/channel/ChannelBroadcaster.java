@@ -55,7 +55,7 @@ public class ChannelBroadcaster extends SseBroadcaster {
 
     @Override
     public void onClose(ChunkedOutput<OutboundEvent> chunkedOutput) {
-        LOGGER.debug("Closing channel for user " + userChannel.getBadgeOsId());
+        LOGGER.debug("Closing channel for user " + userChannel.getBadgeOsId() + requestIdMessage);
         super.onClose(chunkedOutput);
         userChannelService.closeUserChannel(chunkedOutput);
     }
