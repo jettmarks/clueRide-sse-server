@@ -35,7 +35,7 @@ public class UserChannelServiceImpl implements UserChannelService {
 
     @Override
     public UserChannel getUserChannel(Integer badgeOsId, String requestId) {
-        UserChannel userChannel = new UserChannel(badgeOsId);
+        UserChannel userChannel = new UserChannel(badgeOsId, requestId);
 
         /* Use the ChunkedOutput as index for finding UserChannel instance when we want to close. */
         ChunkedOutput eventOutput = userChannel.getEventOutput();

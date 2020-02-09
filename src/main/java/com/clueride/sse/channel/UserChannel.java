@@ -40,10 +40,12 @@ public class UserChannel {
     private String requestId = null;
 
     public UserChannel(
-            Integer badgeOsId
+            Integer badgeOsId,
+            String requestId
     ) {
         this.badgeOsId = badgeOsId;
         this.eventOutput = new EventOutput();
+        this.requestId = requestId;
         this.sseBroadcaster = new ChannelBroadcaster(this);
     }
 
