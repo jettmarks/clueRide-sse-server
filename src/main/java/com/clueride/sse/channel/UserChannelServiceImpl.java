@@ -58,7 +58,10 @@ public class UserChannelServiceImpl implements UserChannelService {
         } else {
             originalRequestId = userChannel.getRequestId();
             userChannel.getKeepAliveGenerator().release();
-            outputChannelService.removeUserChannelFromOuting(userChannel);
+            if (userChannel.getOutingId() != null) {
+                /* Only attempt to remove this UserChannel if we have an outing. */
+                outputChannelService.removeUserChannelFromOuting(userChannel);
+            }
             channelPerChunkedOutput.remove(chunkedOutput);
         }
 

@@ -46,6 +46,10 @@ public class OutingChannelServiceImpl implements OutingChannelService {
             outingChannel = new OutingChannel(outingId);
             outingChannelById.put(outingId, outingChannel);
         }
+
+        Integer userChannelCount = getChunkedOutputsSize(outingChannel.getBroadcaster());
+        LOGGER.debug("During request for OutingChannel, it has this many ChunkedOutputs: " + userChannelCount);
+
         return outingChannel.getBroadcaster();
     }
 
@@ -104,15 +108,21 @@ public class OutingChannelServiceImpl implements OutingChannelService {
      * @param sseBroadcaster Broadcaster that holds zero or more ChunkedOutputs.
      */
     private Integer getChunkedOutputsSize(SseBroadcaster sseBroadcaster) {
-        Integer count = null;
+        Integer countChunkedOutputs = null;
         try {
-            Field field = Broadcaster.class.getDeclaredField("chunkedOutputs");
-            field.setAccessible(true);
-            count = ((ConcurrentLinkedQueue)field.get(sseBroadcaster)).size();
+            Field fieldChunkedOutputs = Broadcaster.class.getDeclaredField("chunkedOutputs");
+            Field fieldListeners = Broadcaster.class.getDeclaredField("listeners");
+            fieldChunkedOutputs.setAccessible(true);
+            fieldListeners.setAccessible(true);
+            ConcurrentLinkedQueue concurrentLinkedQueue = (ConcurrentLinkedQueue) fieldChunkedOutputs.get(sseBroadcaster);
+            for (Object o : concurrentLinkedQueue) {
+                LOGGER.debug(o);
+            }
+            countChunkedOutputs = ((ConcurrentLinkedQueue)fieldChunkedOutputs.get(sseBroadcaster)).size();
         } catch(Exception e) {
             LOGGER.error("Wasn't expecting this", e);
         }
-        return count;
+        return countChunkedOutputs;
     }
 
 }
