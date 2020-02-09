@@ -53,6 +53,7 @@ public class EventOutputServiceImpl implements EventOutputService {
                badgeOsId,
                requestId
         );
+        userChannel.setOutingId(outingId);
         outingChannelService.addUserChannelToOuting(userChannel, outingId);
         return userChannel.getEventOutput();
     }

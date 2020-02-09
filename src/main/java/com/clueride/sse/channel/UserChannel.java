@@ -19,9 +19,11 @@ package com.clueride.sse.channel;
 
 import java.util.Date;
 
+import com.sun.istack.internal.Nullable;
 import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.SseBroadcaster;
 
+import com.clueride.sse.eventoutput.UserChannelEventOutput;
 import com.clueride.sse.keepalive.KeepAliveGenerator;
 import com.clueride.sse.keepalive.KeepAliveGeneratorFactory;
 import com.clueride.sse.keepalive.KeepAliveRunnable;
@@ -32,11 +34,14 @@ import com.clueride.sse.keepalive.KeepAliveRunnable;
 public class UserChannel {
     private Integer badgeOsId;
     private Date creationTimestamp;
-    private EventOutput eventOutput;
+    private UserChannelEventOutput eventOutput;
     private SseBroadcaster sseBroadcaster;
     private KeepAliveGenerator keepAliveGenerator;
     private KeepAliveGeneratorFactory keepAliveGeneratorFactory = new KeepAliveGeneratorFactory();
 
+    @Nullable
+    private Integer outingId = null;
+    @Nullable
     private String requestId = null;
 
     public UserChannel(
@@ -44,7 +49,7 @@ public class UserChannel {
             String requestId
     ) {
         this.badgeOsId = badgeOsId;
-        this.eventOutput = new EventOutput();
+        this.eventOutput = new UserChannelEventOutput(requestId);
         this.requestId = requestId;
         this.sseBroadcaster = new ChannelBroadcaster(this);
     }
@@ -63,6 +68,14 @@ public class UserChannel {
 
     public Integer getBadgeOsId() {
         return badgeOsId;
+    }
+
+    public Integer getOutingId() {
+        return outingId;
+    }
+
+    public void setOutingId(Integer outingId) {
+        this.outingId = outingId;
     }
 
     public Date getCreationTimestamp() {
