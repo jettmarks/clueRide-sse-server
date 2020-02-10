@@ -31,15 +31,25 @@ public class UserChannelServiceImpl implements UserChannelService {
     private static Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
     private static Map<ChunkedOutput, UserChannel> channelPerChunkedOutput = new HashMap<>();
+    private static Map<Integer, ChunkedOutput> chunkedOutputPerUserId = new HashMap<>();
     private final OutingChannelService outputChannelService = new OutingChannelServiceImpl();
 
     @Override
     public UserChannel getUserChannel(Integer badgeOsId, String requestId) {
+        /* If we have a channel mapped for this user, release it; the user doesn't want the old one anymore. */
+        if (chunkedOutputPerUserId.keySet().contains(badgeOsId)) {
+            ChunkedOutput oldChunkedOutput = chunkedOutputPerUserId.get(badgeOsId);
+            closeUserChannel(oldChunkedOutput);
+            chunkedOutputPerUserId.remove(badgeOsId);
+        }
+
+        /* Create a new one as if this is the first time we've ever interacted with the user. */
         UserChannel userChannel = new UserChannel(badgeOsId, requestId);
 
         /* Use the ChunkedOutput as index for finding UserChannel instance when we want to close. */
         ChunkedOutput eventOutput = userChannel.getEventOutput();
         channelPerChunkedOutput.put(eventOutput, userChannel);
+        chunkedOutputPerUserId.put(badgeOsId, eventOutput);
 
         /* Complete initialization. */
         userChannel.setRequestId(requestId);
