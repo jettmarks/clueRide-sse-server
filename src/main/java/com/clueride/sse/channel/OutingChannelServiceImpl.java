@@ -19,7 +19,9 @@ package com.clueride.sse.channel;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -82,21 +84,42 @@ public class OutingChannelServiceImpl implements OutingChannelService {
 
     @Override
     public void removeUserChannelFromOuting(UserChannel userChannel) {
-        /* Find the outing this user had been participating in. */
+        /* Make sure we have a channel for this user. */
+        Integer outingId = userChannel.getOutingId();
         Integer userId = userChannel.getBadgeOsId();
-        Integer outingId = outingIdByUserId.get(userId);
+        if (!userChannelById.keySet().contains(userId)) {
+            LOGGER.warn("Requesting to remove channel for user who hasn't got one for any outing");
+            return;
+        }
+
+        if (!outingIdByUserId.keySet().contains(userId)) {
+            LOGGER.warn("Requesting to update Outing for user who isn't registered with one.");
+            return;
+        }
+
+        LOGGER.debug("Dropping user channel for " + userChannel.getRequestId());
 
         /* The broadcaster for the outing we're working with. */
         SseBroadcaster broadcaster = getOutingBroadcaster(outingId);
 
-        if (userChannelById.containsKey(userId)) {
-            LOGGER.debug("Dropping user channel for " + userChannel.getRequestId());
-            EventOutput oldEventOutput = userChannelById.get(userId).getEventOutput();
-            broadcaster.remove(oldEventOutput);
+        synchronized (outingChannelById) {
+            List<UserChannel> userChannelsOriginallySubscribed = getUserChannelsForOuting(outingId);
+
+            /* Clear all previous. */
+            for (UserChannel currentChannel : userChannelsOriginallySubscribed) {
+                broadcaster.remove(currentChannel.getEventOutput());
+            }
+
+            /* Clear from each of the lists. */
             userChannelById.remove(userId);
             outingIdByUserId.remove(userId);
-        } else {
-            LOGGER.debug("User Channel not recorded against any outings");
+
+            List<UserChannel> userChannelsStillSubscribed = getUserChannelsForOuting(outingId);
+            /* Now re-add back in remaining channels. */
+
+            for (UserChannel remainingChannel : userChannelsStillSubscribed) {
+                broadcaster.add(remainingChannel.getEventOutput());
+            }
         }
 
         Integer userChannelCount = getChunkedOutputsSize(broadcaster);
@@ -123,6 +146,17 @@ public class OutingChannelServiceImpl implements OutingChannelService {
             LOGGER.error("Wasn't expecting this", e);
         }
         return countChunkedOutputs;
+    }
+
+    private List<UserChannel> getUserChannelsForOuting(Integer outingId) {
+        List<UserChannel> userChannels = new ArrayList<>();
+
+        for (Map.Entry<Integer, Integer> entry : outingIdByUserId.entrySet()) {
+            if (entry.getValue().equals(outingId)) {
+                userChannels.add(userChannelById.get(entry.getKey()));
+            }
+        }
+        return userChannels;
     }
 
 }

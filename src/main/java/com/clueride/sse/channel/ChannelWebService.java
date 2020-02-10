@@ -61,7 +61,7 @@ public class ChannelWebService {
             @PathParam("badgeOsId") Integer badgeOsId,
             @QueryParam("r") final String requestId
     ) {
-        LOGGER.debug("Generic SSE Channel request: " + requestId + " for " + badgeOsId);
+        LOGGER.debug("User-only SSE Channel request: " + requestId + " for " + badgeOsId);
         return eventOutputService.getEventOutputForUser(badgeOsId, requestId);
     }
 
@@ -82,9 +82,9 @@ public class ChannelWebService {
             @QueryParam("r") final String requestId
     ) {
         LOGGER.debug(
-                "BadgeOS ID " + badgeOsId +
-                " Outing ID " + outingId +
-                " SSE Channel request " + requestId
+                "Outing-based SSE Channel request " + requestId +
+                " for " + badgeOsId +
+                " on Outing ID " + outingId
         );
         return eventOutputService.getEventOutputForOuting(
                 badgeOsId,
